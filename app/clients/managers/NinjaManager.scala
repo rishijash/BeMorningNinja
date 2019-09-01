@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class NinjaManager {
 
   private val instagramClient = new InstagramClient()
-  private val store = new NinjaStore()
+  private lazy val store = new NinjaStore()
 
   def getProfile(username: String): Future[GetProfileRes] = {
     instagramClient.getProfile(username).map(instagramProfile => {
