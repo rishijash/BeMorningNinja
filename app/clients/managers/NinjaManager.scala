@@ -21,16 +21,19 @@ class NinjaManager {
     })
   }
 
-  def getProfiles(): Future[GetProfilesRes] = {
+  def getProfiles(withContent: Option[Boolean]): Future[GetProfilesRes] = {
     val usernames = store.getAccounts().getOrElse(List.empty)
-    val usernamesFutureList = usernames.map(user => {
-      instagramClient.getProfile(user)
-    })
-    val usernamesFuture = Future.sequence(usernamesFutureList)
-    usernamesFuture.map(usernamesRes => {
-      val profiles = usernamesRes.flatten.map(toProfile(_))
-      GetProfilesRes(profiles = profiles)
-    })
+    if(withContent.getOrElse(true)) {
+      val usernamesFutureList = usernames.map(user => instagramClient.getProfile(user))
+      val usernamesFuture = Future.sequence(usernamesFutureList)
+      usernamesFuture.map(usernamesRes => {
+        val profiles = usernamesRes.flatten.map(toProfile(_))
+        GetProfilesRes(profiles = profiles)
+      })
+    } else {
+      val profiles = usernames.map(toProfile(_))
+      Future.successful(GetProfilesRes(profiles = profiles))
+    }
   }
 
   private def toProfile(instagramProfile: InstagramProfile, includeVideoLink: Boolean = false): Profile = {
@@ -41,6 +44,17 @@ class NinjaManager {
       profilePic = instagramProfile.graphql.user.profile_pic_url,
       selectedImageUrl = getBestImage(instagramProfile),
       selectedVideoUrl = getBestVideo(instagramProfile, includeVideoLink)
+    )
+  }
+
+  private def toProfile(username: String): Profile = {
+    Profile(
+      username = username,
+      profileUrl = s"${instagramClient.baseUrl}${username}",
+      summary = None,
+      profilePic = None,
+      selectedImageUrl = None,
+      selectedVideoUrl = None
     )
   }
 

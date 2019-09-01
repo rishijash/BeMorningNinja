@@ -15,8 +15,8 @@ class NinjaController extends Controller {
     Future.successful(Ok("Let's get this BREAD!"))
   }
 
-  def getProfiles() = Action.async(parse.anyContent) { request =>
-    ninjaManager.getProfiles().map(res =>
+  def getProfiles(withContent: Option[Boolean]) = Action.async(parse.anyContent) { request =>
+    ninjaManager.getProfiles(withContent).map(res =>
       Ok(Json.toJson(res))
     )
   }
