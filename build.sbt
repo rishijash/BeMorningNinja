@@ -10,7 +10,9 @@ libraryDependencies ++= Seq(
   jdbc,
   cache,
   "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
-  ws
+  ws,
+  "org.scalaj" %% "scalaj-http" % "2.4.1",
+  "com.google.cloud" % "google-cloud-firestore" % "1.7.0"
 )
 
 libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-compiler" % _ )
