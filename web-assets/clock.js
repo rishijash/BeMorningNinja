@@ -35,13 +35,18 @@ document.addEventListener("DOMContentLoaded", function() {
     addListenerForInput();
 
     // Alarm constructor
-    function Alarm(timeArg, nameArg){
-        this.time = timeArg;
+    function Alarm(hourArg, minArg, nameArg){
+        this.hourArg = hourArg;
+        this.minArg = minArg;
         this.name = nameArg;
 
-        this.getTime = function(){
-            return this.time;
-        }
+        this.getHour = function(){
+            return this.hourArg;
+        };
+
+        this.getMinute = function(){
+            return this.minArg;
+        };
 
         this.getName = function(){
             return this.name;
@@ -86,31 +91,33 @@ document.addEventListener("DOMContentLoaded", function() {
         var timeMinutes = time.getMinutes();
         var timeHours = time.getHours();
 
+        var timeHoursDisplay = timeHours;
+        var timeMinutesDisplay = timeMinutes;
+        var timeSecondsDisplay = timeSeconds;
 
         // Format values
         if (timeHours > 12){
-            timeHours -= 12;
+            timeHoursDisplay -= 12;
             ampm = 'PM'
         }
 
         if (timeMinutes < 10){
-            timeMinutes = '0' + timeMinutes;
+            timeMinutesDisplay = '0' + timeMinutes;
         }
 
         if (timeSeconds < 10){
-            timeSeconds = '0' + timeSeconds;
+            timeSecondsDisplay = '0' + timeSeconds;
         }
 
         // Display time
-        wrapper.innerHTML = timeHours + ':' + timeMinutes + ':' + timeSeconds + ' ' + ampm;
+        wrapper.innerHTML = timeHoursDisplay + ':' + timeMinutesDisplay + ':' + timeSecondsDisplay + ' ' + ampm;
 
         // Check if time matches alarm time
 
         if (alarms.length > 0){
             for (var i = 0; i < alarms.length; i++){
-                var checkAlarm = alarms[i].getTime();
-
-                if (checkAlarm.getHours() == timeHours && checkAlarm.getMinutes() == timeMinutes){
+                var checkAlarm = alarms[i];
+                if (checkAlarm.getHour() == timeHours && checkAlarm.getMinute() == timeMinutes){
                     ringAlarm(alarms[i]);
                 }
             }
@@ -130,23 +137,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (alarmName.value && alarmHours.value && alarmMinutes.value && alarmAMPM.value){
 
-            var time = new Date();
+            var hour = 0;
+            var minute = 0;
 
             if (alarmAMPM.value == "PM"){
-                time.setHours(parseInt(alarmHours.value) + 12);
+                hour =  parseInt(alarmHours.value) + 12;
             }
             else {
-                time.setHours(alarmHours.value);
+                hour = parseInt(alarmHours.value);
             }
 
-            time.setMinutes(alarmMinutes.value);
+            minute = parseInt(alarmMinutes.value);
 
-            time.setSeconds(0);
-
-
-            alert(time);
             // Create new alarm object and store it in alarms[]
-            var newAlarm = new Alarm(time, alarmName.value);
+            var newAlarm = new Alarm(hour, minute, alarmName.value);
             alarms.push(newAlarm);
 
             // Update alarm message text
@@ -154,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // Append date to list of dates in DOM
             var newListItem = document.createElement('li');
-            newListItem.innerHTML = alarmName.value + " - " + time.toLocaleTimeString();
+            newListItem.innerHTML = alarmName.value + " - " + alarmHours.value + ":" + alarmMinutes.value + " " + alarmAMPM.value;
             alarmList.appendChild(newListItem);
         }
         else{
@@ -170,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function() {
             var url = getVideoLinkFromInstagram(alarmData.getName());
 
             // Play it
-            window.open(urlStr,'_blank');
+            window.open(url,'_blank');
             triggered = true;
         }
 
