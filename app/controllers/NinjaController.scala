@@ -1,13 +1,15 @@
 package controllers
 
 import clients.managers.NinjaManager
+import com.google.inject.Inject
 import play.api.libs.json.Json
+import play.api.libs.ws.WSClient
 import play.api.mvc._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class NinjaController extends Controller {
+class NinjaController @Inject()(implicit ws: WSClient) extends Controller {
 
   val ninjaManager = new NinjaManager()
 

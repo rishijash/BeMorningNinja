@@ -5,12 +5,14 @@ import javax.inject.Inject
 import org.slf4j.LoggerFactory
 import play.api.Configuration
 import play.api.libs.json.Json
+import play.api.libs.ws.WSClient
 import scalaj.http.{Http, HttpOptions}
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class InstagramClient {
+class InstagramClient @Inject() (implicit ws: WSClient) {
 
   val baseUrl = "https://www.instagram.com/"
 
@@ -32,23 +34,20 @@ class InstagramClient {
   }
 
   private def sendRequest(url: String): Future[Either[models.Error, Response]] = {
-    Future {
-      try {
-        val result = Http(url)
-          .header("Accept", "application/json")
-          .option(HttpOptions.readTimeout(4000)).asString
-        if (result.code == 200) {
-          Right(Response(result.code.toString, result.body))
+    try {
+      ws.url(url).get().map(result => {
+        if (result.status == 200) {
+          Right(Response(result.status.toString, result.body))
         } else {
-          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code}"
+          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.status}"
           log.error(msg)
           Left(models.Error("INSTAGRAM_API_ERROR", msg))
         }
-      } catch {
-        case e: Exception => {
-          val msg = s"Error in getting profile from Instagram url: ${url} with Exception: ${e.getMessage}"
-          Left(models.Error("INSTAGRAM_API_ERROR", msg))
-        }
+      })
+    } catch {
+      case e: Exception => {
+        val msg = s"Error in getting profile from Instagram url: ${url} with Exception: ${e.getMessage}"
+        Future.successful(Left(models.Error("INSTAGRAM_API_ERROR", msg)))
       }
     }
   }

@@ -1,15 +1,17 @@
 package clients.managers
 
 import clients.instagram.{InstagramClient, InstagramProfile}
+import com.google.inject.Inject
 import datastore.NinjaStore
 import models.{GetProfileRes, GetProfilesRes, Profile, SelectedMedia}
+import play.api.libs.ws.WSClient
 import util.HtmlUtil
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class NinjaManager {
+class NinjaManager @Inject()(implicit ws: WSClient) {
 
   private val instagramClient = new InstagramClient()
   private lazy val store = new NinjaStore()
@@ -27,7 +29,7 @@ class NinjaManager {
 
   def getProfiles(withContent: Option[Boolean]): Future[Either[models.Error, GetProfilesRes]] = {
     val usernames = store.getAccounts().getOrElse(List.empty)
-    if(withContent.getOrElse(true)) {
+    if (withContent.getOrElse(true)) {
       val usernamesFutureList = usernames.map(user => instagramClient.getProfile(user))
       val usernamesFuture = Future.sequence(usernamesFutureList)
       usernamesFuture.map(usernamesRes => {
