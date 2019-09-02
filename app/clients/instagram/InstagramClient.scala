@@ -36,11 +36,12 @@ class InstagramClient {
       try {
         val result = Http(url)
           .header("Accept", "application/json")
+          .option(HttpOptions.followRedirects(true))
           .option(HttpOptions.readTimeout(4000)).asString
         if (result.code == 200) {
           Right(Response(result.code.toString, result.body))
         } else {
-          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code} and body: ${result.body}"
+          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code}"
           log.error(msg)
           Left(models.Error("INSTAGRAM_API_ERROR", msg))
         }
