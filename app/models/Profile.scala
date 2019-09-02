@@ -11,6 +11,7 @@ case class SelectedMedia (
 case class Profile (
   username: String,
   profileUrl: String,
+  genre: Option[String],
   summary: Option[String],
   profilePic: Option[String],
   selectedVideoUrl: Option[SelectedMedia],

@@ -32,16 +32,43 @@ class NinjaController @Inject()(implicit ws: WSClient) extends Controller {
     ))
   }
 
-  def responseChecker() = Action.async(parse.json) { request =>
-    val url = (request.body \ "url").asOpt[String]
-    if (url.isDefined) {
-      ninjaManager.responseChecker(url.get).map(_.fold(
-        error => InternalServerError(Json.toJson(error)),
-        res => Ok(Json.toJson(res))
-      ))
-    } else {
-      Future.successful(InternalServerError)
-    }
+  def getNinja(ninjaId: String) = Action.async(parse.anyContent) { request =>
+    ninjaManager.getNinja(ninjaId).map(_.fold(
+      error => InternalServerError(Json.toJson(error)),
+      res => Ok(Json.toJson(res))
+    ))
+  }
+
+  def addNinja(ninjaId: String) = Action.async(parse.json) { request =>
+    val maybeLastAlarm = (request.body \ "lastAlarm").asOpt[String]
+    val maybeLastUsername = (request.body \ "lastUsername").asOpt[String]
+    ninjaManager.addNinja(ninjaId, maybeLastAlarm, maybeLastUsername).map(_.fold(
+      error => InternalServerError(Json.toJson(error)),
+      res => Ok(Json.toJson(res))
+    ))
+  }
+
+  def updateNinja(ninjaId: String) = Action.async(parse.json) { request =>
+    val maybeLastAlarm = (request.body \ "lastAlarm").asOpt[String]
+    val maybeLastUsername = (request.body \ "lastUsername").asOpt[String]
+    ninjaManager.updateNinja(ninjaId, maybeLastAlarm, maybeLastUsername).map(_.fold(
+      error => InternalServerError(Json.toJson(error)),
+      res => Ok(Json.toJson(res))
+    ))
+  }
+
+  def getAccounts() = Action.async(parse.anyContent) { request =>
+    ninjaManager.getAccounts.map(_.fold(
+      error => InternalServerError(Json.toJson(error)),
+      res => Ok(Json.toJson(res))
+    ))
+  }
+
+  def updateAccount(username: String, thumbsUp: Option[Boolean], gym: Option[Boolean], sleepy: Option[Boolean]) = Action.async(parse.anyContent) { request =>
+    ninjaManager.updateAccount(username, thumbsUp.getOrElse(false), gym.getOrElse(false), sleepy.getOrElse(false)).map(_.fold(
+      error => InternalServerError(Json.toJson(error)),
+      res => Ok(Json.toJson(res))
+    ))
   }
 
 

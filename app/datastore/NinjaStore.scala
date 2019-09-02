@@ -15,19 +15,23 @@ import scala.collection.JavaConversions._
 import java.util.UUID.randomUUID
 import java.util.Calendar
 
+import models.{Account, Ninja}
+
 class NinjaStore {
 
   private val log = LoggerFactory.getLogger(this.getClass.getName)
 
   private val accountsCollection = "accounts"
   private val usernameKey = "username"
+  private val genreKey = "genre"
+  private val thumbsUpCountKey = "thumbsUp"
+  private val sleepyCountKey = "sleepyCount"
+  private val gymCountKey = "gymCount"
 
-  val hostKey = "host"
-  val totalParamsCountKey = "totalParamsCount"
-  val safeParamsCountKey = "safeParamsCount"
-  val createdKey = "created"
-
-  private val alarmsCollection = "alarms"
+  private val ninjaCollection = "ninjas"
+  private val ninjaIdKey = "ninjaId"
+  private val lastAlarmKey = "lastAlarm"
+  private val lastAlarmUsernameKey = "lastAlarmUsername"
 
   private val privateKeyId = scala.util.Properties.envOrElse("private_key_id", "")
   private val privateKey = scala.util.Properties.envOrElse("private_key", "")
@@ -51,7 +55,6 @@ class NinjaStore {
        |}
     """.stripMargin
 
-  final val tempFile = File.createTempFile("beMorningNinjaKey",".json")
   final val writer: BufferedWriter = new BufferedWriter(new FileWriter(tempFile.getAbsolutePath))
   writer.write(createKeyFileData)
   writer.close()
@@ -60,33 +63,131 @@ class NinjaStore {
     .setCredentials(ServiceAccountCredentials.fromStream(new FileInputStream(tempFile.getAbsolutePath)))
     .build().getService
 
-  def createMetrics(host: String, totalParamsCount: Int, safeParamsCount: Int = 0): Boolean = {
+  def getAccounts(): Option[List[Account]] = {
+    try {
+      val allData = firebaseClient.collection(accountsCollection).get().get()
+      val allDocuments = allData.getDocuments.toList
+      val usernamesData = allDocuments.map(d => {
+        val username = d.getData.get(usernameKey).toString
+        val genre = Option(d.get(genreKey)).map(_.toString).filter(_.nonEmpty)
+        val gymCount = Option(d.get(gymCountKey)).map(_.toString.toInt)
+        val sleepyCount = Option(d.get(sleepyCountKey)).map(_.toString.toInt)
+        val thumbsupCount = Option(d.get(thumbsUpCountKey)).map(_.toString.toInt)
+        Account(d.getId, username, genre, thumbsupCount, sleepyCount, gymCount)
+      })
+      Some(usernamesData)
+    } catch {
+      case e: Exception =>
+        log.error(s"Exception: ${e.getMessage} in getAccounts.")
+        None
+    }
+  }
+
+  def getAccount(username: String): Option[Account] = {
+    try {
+      val accountData = firebaseClient.collection(accountsCollection).whereEqualTo(usernameKey, username).get().get()
+      val accountDocument = accountData.getDocuments.toList.headOption
+      accountDocument.map(d => {
+        val genre = Option(d.get(genreKey)).map(_.toString).filter(_.nonEmpty)
+        val gymCount = Option(d.get(gymCountKey)).map(_.toString.toInt)
+        val sleepyCount = Option(d.get(sleepyCountKey)).map(_.toString.toInt)
+        val thumbsupCount = Option(d.get(thumbsUpCountKey)).map(_.toString.toInt)
+        Account(d.getId, username, genre, thumbsupCount, sleepyCount, gymCount)
+      })
+    } catch {
+      case e: Exception =>
+        log.error(s"Exception: ${e.getMessage} in getAccount for username: ${username}.")
+        None
+    }
+  }
+
+  def updateAccount(username: String, thumbsUp: Boolean, gym: Boolean, sleepy: Boolean): Boolean = {
+    try {
+      val maybeAccount = getAccount(username)
+      if (maybeAccount.isDefined) {
+        val gymCount = maybeAccount.get.gymCount.getOrElse(0) + (if (gym) 1 else 0)
+        val sleepyCount = maybeAccount.get.sleepyCount.getOrElse(0) + (if (sleepy) 1 else 0)
+        val thumbsupCount = maybeAccount.get.thumbsupCount.getOrElse(0) + (if (thumbsUp) 1 else 0)
+        val docData = (for {
+          genre <- maybeAccount.get.genre
+        } yield {
+          new util.HashMap[String, Any](Map(usernameKey -> username, genreKey -> genre, thumbsUpCountKey -> thumbsupCount, gymCountKey -> gymCount, sleepyCountKey -> sleepyCount))
+        }).getOrElse({
+          new util.HashMap[String, Any](Map(usernameKey -> username, thumbsUpCountKey -> thumbsupCount, gymCountKey -> gymCount, sleepyCountKey -> sleepyCount))
+        })
+        firebaseClient.collection(accountsCollection).document(maybeAccount.get.dataId).set(docData)
+        true
+      } else {
+        false
+      }
+    } catch {
+      case e: Exception =>
+        log.error(s"Exception: ${e.getMessage} in updating account for username: ${username}")
+        false
+    }
+  }
+
+  def addNinja(ninjaId: String, maybeLastAlarm: Option[String], maybeLastUsername: Option[String]): Boolean = {
     try {
       val created = Calendar.getInstance().getTime().toString()
-      val docData = new util.HashMap[String, Any](Map(hostKey -> host,
-        totalParamsCountKey -> totalParamsCount, safeParamsCountKey -> safeParamsCount, createdKey -> created))
+      val docData = (for {
+        lastAlarm <- maybeLastAlarm
+        lastUsername <- maybeLastUsername
+      } yield {
+        new util.HashMap[String, Any](Map(ninjaIdKey -> ninjaId,
+          lastAlarmKey -> lastAlarm, lastAlarmUsernameKey -> lastUsername))
+      }).getOrElse({
+        new util.HashMap[String, Any](Map(ninjaIdKey -> ninjaId))
+      })
       val id = randomUUID().toString
       firebaseClient.collection(accountsCollection).document(id).set(docData)
       true
     } catch {
       case e: Exception =>
-        log.error(s"Exception: ${e.getMessage} in creating metrics for host: ${host}, totalParamsCount: ${totalParamsCount}, safeParamsCount: ${safeParamsCount}")
+        log.error(s"Exception: ${e.getMessage} in creating ninja for ninjaId: ${ninjaId}")
         false
     }
   }
 
-  def getAccounts(): Option[List[String]] = {
+  def getNinja(ninjaId: String): Option[Ninja] = {
     try {
-      val allData = firebaseClient.collection(accountsCollection).get().get()
-      val allDocuments = allData.getDocuments.toList
-      val usernames = allDocuments.map(doc => {
-       doc.getData.get(usernameKey).toString
+      val ninjaData = firebaseClient.collection(ninjaCollection).whereEqualTo(ninjaIdKey, ninjaId).get().get()
+      val ninjaDocuments = ninjaData.getDocuments.toList.headOption
+      ninjaDocuments.map(d => {
+        val dataId = d.getId
+        val lastAlarm = Option(d.getData.get(lastAlarmKey)).map(_.toString).filter(_.nonEmpty)
+        val lastUsername = Option(d.getData.get(lastAlarmUsernameKey)).map(_.toString).filter(_.nonEmpty)
+        Ninja(dataId, ninjaId, lastAlarm, lastUsername)
       })
-      Option(usernames.distinct).filter(_.nonEmpty)
     } catch {
       case e: Exception =>
         log.error(s"Exception: ${e.getMessage} in getAccounts.")
         None
+    }
+  }
+
+  def updateNinja(ninjaId: String, maybeLastAlarm: Option[String], maybeLastUsername: Option[String]): Boolean = {
+    try {
+      val maybeNinja = getNinja(ninjaId)
+      if (maybeNinja.isDefined) {
+        val docData = (for {
+          lastAlarm <- maybeLastAlarm
+          lastUsername <- maybeLastUsername
+        } yield {
+          new util.HashMap[String, Any](Map(ninjaIdKey -> ninjaId,
+            lastAlarmKey -> lastAlarm, lastAlarmUsernameKey -> lastUsername))
+        }).getOrElse({
+          new util.HashMap[String, Any](Map(ninjaIdKey -> ninjaId))
+        })
+        firebaseClient.collection(accountsCollection).document(maybeNinja.get.dataId).set(docData)
+        true
+      } else {
+        false
+      }
+    } catch {
+      case e: Exception =>
+        log.error(s"Exception: ${e.getMessage} in updating ninja for ninjaId: ${ninjaId}")
+        false
     }
   }
 

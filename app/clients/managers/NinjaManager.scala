@@ -4,7 +4,7 @@ import clients.Response
 import clients.instagram.{InstagramClient, InstagramProfile}
 import com.google.inject.Inject
 import datastore.NinjaStore
-import models.{GetProfileRes, GetProfilesRes, Profile, SelectedMedia}
+import models.{Account, GetProfileRes, GetProfilesRes, Ninja, Profile, SelectedMedia}
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.Future
@@ -26,10 +26,32 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     ))
   }
 
+  def getAccounts(): Future[Either[models.Error, List[Account]]] = {
+    Future {
+      val accounts = store.getAccounts()
+      if(accounts.isDefined) {
+        Right(accounts.get)
+      } else {
+        Left(models.Error("ACCOUNT_ERROR", s"ACCOUNTS not found."))
+      }
+    }
+  }
+
+  def updateAccount(username: String, thumbsUp: Boolean, gym: Boolean, sleepy: Boolean): Future[Either[models.Error, Boolean]] = {
+    Future {
+      val res = store.updateAccount(username, thumbsUp, gym, sleepy)
+      if (res) {
+        Right(res)
+      } else {
+        Left(models.Error("ACCOUNT_ERROR", s"ACCOUNT not updated."))
+      }
+    }
+  }
+
   def getProfiles(withContent: Option[Boolean]): Future[Either[models.Error, GetProfilesRes]] = {
-    val usernames = store.getAccounts().getOrElse(List.empty)
+    val usernamesData = store.getAccounts().getOrElse(List.empty)
     if (withContent.getOrElse(true)) {
-      val usernamesFutureList = usernames.map(user => instagramClient.getProfile(user))
+      val usernamesFutureList = usernamesData.map(_.username).map(user => instagramClient.getProfile(user))
       val usernamesFuture = Future.sequence(usernamesFutureList)
       usernamesFuture.map(usernamesRes => {
         val profiles = usernamesRes.flatMap(_.right.toOption).map(toProfile(_))
@@ -37,24 +59,49 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
         Right(res)
       })
     } else {
-      val profiles = usernames.map(toProfile(_))
+      val profiles = usernamesData.map(d => toProfile(d.username, d.genre))
       Future.successful(Right(GetProfilesRes(profiles = profiles)))
     }
   }
 
-  def responseChecker(url: String): Future[Either[models.Error, Response]] = {
-    instagramClient.sendRequest(url).map(_.fold(
-      error => Left(error),
-      res => {
-        Right(res)
+  def getNinja(ninjaId: String): Future[Either[models.Error, Ninja]] = {
+    Future {
+      val maybeNinja = store.getNinja(ninjaId)
+      if (maybeNinja.isDefined) {
+        Right(maybeNinja.get)
+      } else {
+        Left(models.Error("NINJA_ERROR", s"NINJA not found for NinjaId: ${ninjaId}"))
       }
-    ))
+    }
+  }
+
+  def addNinja(ninjaId: String, maybeLastAlarm: Option[String], maybeLastUsername: Option[String]): Future[Either[models.Error, Boolean]] = {
+    Future {
+      val res = store.addNinja(ninjaId, maybeLastAlarm, maybeLastUsername)
+      if (res) {
+        Right(res)
+      } else {
+        Left(models.Error("NINJA_ERROR", s"NINJA not created for NinjaId: ${ninjaId}"))
+      }
+    }
+  }
+
+  def updateNinja(ninjaId: String, maybeLastAlarm: Option[String], maybeLastUsername: Option[String]): Future[Either[models.Error, Boolean]] = {
+    Future {
+      val res = store.updateNinja(ninjaId, maybeLastAlarm, maybeLastUsername)
+      if (res) {
+        Right(res)
+      } else {
+        Left(models.Error("NINJA_ERROR", s"NINJA not updated for NinjaId: ${ninjaId}"))
+      }
+    }
   }
 
   private def toProfile(instagramProfile: InstagramProfile, includeVideoLink: Boolean = false): Profile = {
     Profile(
       username = instagramProfile.graphql.user.username,
       profileUrl = s"${instagramClient.baseUrl}${instagramProfile.graphql.user.username}",
+      genre = None,
       summary = instagramProfile.graphql.user.biography,
       profilePic = instagramProfile.graphql.user.profile_pic_url,
       selectedImageUrl = getBestImage(instagramProfile),
@@ -62,10 +109,11 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     )
   }
 
-  private def toProfile(username: String): Profile = {
+  private def toProfile(username: String, genre: Option[String]): Profile = {
     Profile(
       username = username,
       profileUrl = s"${instagramClient.baseUrl}${username}",
+      genre = genre,
       summary = None,
       profilePic = None,
       selectedImageUrl = None,
