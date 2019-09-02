@@ -40,13 +40,13 @@ class InstagramClient {
         if (result.code == 200) {
           Right(Response(result.code.toString, result.body))
         } else {
-          val msg = s"Error is getting profile from Instagram url: ${url}"
+          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code}"
           log.error(msg)
           Left(models.Error("INSTAGRAM_API_ERROR", msg))
         }
       } catch {
         case e: Exception => {
-          val msg = s"Error is getting profile from Instagram url: ${url} with Exception: ${e.getMessage}"
+          val msg = s"Error in getting profile from Instagram url: ${url} with Exception: ${e.getMessage}"
           Left(models.Error("INSTAGRAM_API_ERROR", msg))
         }
       }
