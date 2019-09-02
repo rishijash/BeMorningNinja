@@ -1,6 +1,10 @@
 <html>
 	<head>
 	  <title>Alarm Clock</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 	  <link rel="stylesheet" href="web-assets/clock.css">
 	  <script type="text/javascript" src="web-assets/clock.js"></script>
 	</head>
@@ -32,5 +36,33 @@
 			</section>
 
 		</section>
+
+
+        <!-- The Modal -->
+        <div class="modal" id="alarmPlayer">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Let's get this BREAD!!!</h4>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body" id="alarmPlayerBody">
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <div class="row" style="width: 100%">
+                            <div class="col-6"><button class="btn btn-block btn-info" id="strongMorning">💪</button></div>
+                            <div class="col-6"><button class="btn btn-block btn-danger" id="lazyMorning">😴</button></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
 	</body>
 </html>

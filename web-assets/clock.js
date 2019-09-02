@@ -7,7 +7,14 @@ Notes:
     - "Alarm Clock" font from dafont.com, created by David J. Patterson ( http://www.dafont.com/alarm-clock.font )
  */
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Constants
+    var retryCount = 2;
+    var serverBaseUrl = "https://bemorningninja.herokuapp.com/";
+
+    // Helpers
+    var currentUsername = "";
 
     // Selectors
     var wrapper = document.getElementById('wrapper');
@@ -35,41 +42,40 @@ document.addEventListener("DOMContentLoaded", function() {
     addListenerForInput();
 
     // Alarm constructor
-    function Alarm(hourArg, minArg, nameArg){
+    function Alarm(hourArg, minArg, nameArg) {
         this.hourArg = hourArg;
         this.minArg = minArg;
         this.name = nameArg;
 
-        this.getHour = function(){
+        this.getHour = function () {
             return this.hourArg;
         };
 
-        this.getMinute = function(){
+        this.getMinute = function () {
             return this.minArg;
         };
 
-        this.getName = function(){
+        this.getName = function () {
             return this.name;
         }
     }
 
     // Functions
-    function createAlarmElements(){
+    function createAlarmElements() {
 
-        for (i=1; i <= 12; i++){
+        for (i = 1; i <= 12; i++) {
             var hourOption = document.createElement('option');
             hourOption.innerHTML = '<option value="' + i + '">' + i + '</option>';
             alarmHours.appendChild(hourOption);
         }
 
-        for (i=0; i < 60; i++){
+        for (i = 0; i < 60; i++) {
 
             // Pad minutes
             var output;
-            if (i < 10){
+            if (i < 10) {
                 output = '0' + i;
-            }
-            else{
+            } else {
                 output = i;
             }
 
@@ -80,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Render time
-    function renderTime(){
+    function renderTime() {
 
         // create new date object
         var time = new Date();
@@ -96,16 +102,16 @@ document.addEventListener("DOMContentLoaded", function() {
         var timeSecondsDisplay = timeSeconds;
 
         // Format values
-        if (timeHours > 12){
+        if (timeHours > 12) {
             timeHoursDisplay -= 12;
             ampm = 'PM'
         }
 
-        if (timeMinutes < 10){
+        if (timeMinutes < 10) {
             timeMinutesDisplay = '0' + timeMinutes;
         }
 
-        if (timeSeconds < 10){
+        if (timeSeconds < 10) {
             timeSecondsDisplay = '0' + timeSeconds;
         }
 
@@ -114,10 +120,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Check if time matches alarm time
 
-        if (alarms.length > 0){
-            for (var i = 0; i < alarms.length; i++){
+        if (alarms.length > 0) {
+            for (var i = 0; i < alarms.length; i++) {
                 var checkAlarm = alarms[i];
-                if (checkAlarm.getHour() == timeHours && checkAlarm.getMinute() == timeMinutes){
+                if (checkAlarm.getHour() == timeHours && checkAlarm.getMinute() == timeMinutes) {
                     ringAlarm(alarms[i]);
                 }
             }
@@ -128,22 +134,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // Add a listener to the alarm input
-    function addListenerForInput(){
+    function addListenerForInput() {
         submit.addEventListener('click', setAlarm);
     }
 
     // Set alarm
-    function setAlarm(){
+    function setAlarm() {
 
-        if (alarmName.value && alarmHours.value && alarmMinutes.value && alarmAMPM.value){
+        if (alarmName.value && alarmHours.value && alarmMinutes.value && alarmAMPM.value) {
 
             var hour = 0;
             var minute = 0;
 
-            if (alarmAMPM.value == "PM"){
-                hour =  parseInt(alarmHours.value) + 12;
-            }
-            else {
+            if (alarmAMPM.value == "PM") {
+                hour = parseInt(alarmHours.value) + 12;
+            } else {
                 hour = parseInt(alarmHours.value);
             }
 
@@ -160,25 +165,55 @@ document.addEventListener("DOMContentLoaded", function() {
             var newListItem = document.createElement('li');
             newListItem.innerHTML = alarmName.value + " - " + alarmHours.value + ":" + alarmMinutes.value + " " + alarmAMPM.value;
             alarmList.appendChild(newListItem);
-        }
-        else{
+        } else {
             alert('ERROR: valid time and name needed to set an alarm');
         }
     }
 
     // Do something when the alarm goes off
-    function ringAlarm(alarmData){
-        // get Instagram File for Username
-        if(!triggered) {
+    function ringAlarm(alarmData) {
+        // get Instagram Video File for Username
+        if (!triggered) {
             // get Video Link
+            currentUsername = alarmData.getName();
             var url = getVideoLinkFromInstagram(alarmData.getName());
-
             // Play it
-            window.open(url,'_blank');
+            var alarmPlayerBody = document.getElementById("alarmPlayerBody");
+            alarmPlayerBody.innerHTML = "<center><video id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
+                "                                Your browser does not support the video tag.\n" +
+                "                            </video></center>";
+            $("#alarmPlayer").modal();
             triggered = true;
         }
-
     }
+
+    $('#strongMorning').click(function(){
+        //Some code
+        var url = serverBaseUrl + "accounts/" + currentUsername + "?gym=true";
+        $.ajax({
+            url: url,
+            type: 'PUT',
+            success: function(result) {
+            }
+        });
+        $("#alarmPlayer").modal('toggle');
+        var alarmPlayerBody = document.getElementById("alarmPlayerBody");
+        alarmPlayerBody.innerHTML = "";
+    });
+
+    $('#lazyMorning').click(function(){
+        //Some code
+        var url = serverBaseUrl + "accounts/" + currentUsername + "?sleepy=true";
+        $.ajax({
+            url: url,
+            type: 'PUT',
+            success: function(result) {
+            }
+        });
+        $("#alarmPlayer").modal('toggle');
+        var alarmPlayerBody = document.getElementById("alarmPlayerBody");
+        alarmPlayerBody.innerHTML = "";
+    });
 
     function getVideoLinkFromInstagram(username) {
         var finalPostLink = "";
@@ -199,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function() {
             var shortcode = node.shortcode;
             var display_url = node.display_url;
             var is_video = node.is_video;
-            if(is_video == true) {
+            if (is_video == true) {
                 finalPostLink = "https://www.instagram.com/p/" + shortcode + "/"
                 break;
             }
@@ -213,12 +248,26 @@ document.addEventListener("DOMContentLoaded", function() {
         return urlStr;
     }
 
-    function httpGet(theUrl)
-    {
-      var xmlHttp = new XMLHttpRequest();
-      xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-      xmlHttp.send( null );
-      return xmlHttp.responseText;
+    function httpGet(theUrl) {
+        var tryCount = 0;
+        var res = httpGetCall(theUrl);
+        while(tryCount < retryCount && res.status != 200) {
+            res = httpGetCall(theUrl)
+        }
+        return res.responseText;
+    }
+
+    function httpGetCall(url) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", url, false); // false for synchronous request
+        xmlHttp.send(null);
+        return new HttpRes(xmlHttp.status, xmlHttp.responseText);
+    }
+
+    // Res Constructor
+    function HttpRes(status, responseText) {
+        this.status = status;
+        this.responseText = responseText;
     }
 
 });
