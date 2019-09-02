@@ -15,7 +15,7 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
   private lazy val store = new NinjaStore()
 
   def getProfile(username: String): Future[Either[models.Error, GetProfileRes]] = {
-    instagramClient.getInstagramProfileWeb(username).map(_.fold(
+    instagramClient.getProfile(username).map(_.fold(
       error => Left(error),
       instagramProfile => {
         val profile = toProfile(instagramProfile, true)
@@ -28,7 +28,7 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
   def getProfiles(withContent: Option[Boolean]): Future[Either[models.Error, GetProfilesRes]] = {
     val usernames = store.getAccounts().getOrElse(List.empty)
     if (withContent.getOrElse(true)) {
-      val usernamesFutureList = usernames.map(user => instagramClient.getInstagramProfileWeb(user))
+      val usernamesFutureList = usernames.map(user => instagramClient.getProfile(user))
       val usernamesFuture = Future.sequence(usernamesFutureList)
       usernamesFuture.map(usernamesRes => {
         val profiles = usernamesRes.flatMap(_.right.toOption).map(toProfile(_))
