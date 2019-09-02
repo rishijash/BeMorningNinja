@@ -74,7 +74,7 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
     })
   }
 
-  private def sendRequest(url: String): Future[Either[models.Error, Response]] = {
+  def sendRequest(url: String): Future[Either[models.Error, Response]] = {
     Future {
       try {
         val result = Http(url)

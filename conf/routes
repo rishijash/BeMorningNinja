@@ -6,6 +6,7 @@
 GET     /                           @controllers.NinjaController.home()
 GET     /profiles                   @controllers.NinjaController.getProfiles(withContent: Option[Boolean])
 GET     /profiles/:username         @controllers.NinjaController.getProfile(username: String)
+POST    /responseChecker            @controllers.NinjaController.responseChecker()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

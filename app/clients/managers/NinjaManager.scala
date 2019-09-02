@@ -1,5 +1,6 @@
 package clients.managers
 
+import clients.Response
 import clients.instagram.{InstagramClient, InstagramProfile}
 import com.google.inject.Inject
 import datastore.NinjaStore
@@ -39,6 +40,15 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
       val profiles = usernames.map(toProfile(_))
       Future.successful(Right(GetProfilesRes(profiles = profiles)))
     }
+  }
+
+  def responseChecker(url: String): Future[Either[models.Error, Response]] = {
+    instagramClient.sendRequest(url).map(_.fold(
+      error => Left(error),
+      res => {
+        Right(res)
+      }
+    ))
   }
 
   private def toProfile(instagramProfile: InstagramProfile, includeVideoLink: Boolean = false): Profile = {

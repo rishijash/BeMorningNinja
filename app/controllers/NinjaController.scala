@@ -32,5 +32,17 @@ class NinjaController @Inject()(implicit ws: WSClient) extends Controller {
     ))
   }
 
+  def responseChecker() = Action.async(parse.json) { request =>
+    val url = (request.body \ "url").asOpt[String]
+    if (url.isDefined) {
+      ninjaManager.responseChecker(url.get).map(_.fold(
+        error => InternalServerError(Json.toJson(error)),
+        res => Ok(Json.toJson(res))
+      ))
+    } else {
+      Future.successful(InternalServerError)
+    }
+  }
+
 
 }
