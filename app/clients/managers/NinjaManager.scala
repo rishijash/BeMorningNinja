@@ -14,25 +14,30 @@ class NinjaManager {
   private val instagramClient = new InstagramClient()
   private lazy val store = new NinjaStore()
 
-  def getProfile(username: String): Future[GetProfileRes] = {
-    instagramClient.getProfile(username).map(instagramProfile => {
-      val profile = instagramProfile.map(i => toProfile(i, true))
-      GetProfileRes(profile)
-    })
+  def getProfile(username: String): Future[Either[models.Error, GetProfileRes]] = {
+    instagramClient.getProfile(username).map(_.fold(
+      error => Left(error),
+      instagramProfile => {
+        val profile = toProfile(instagramProfile, true)
+        val res = GetProfileRes(profile)
+        Right(res)
+      }
+    ))
   }
 
-  def getProfiles(withContent: Option[Boolean]): Future[GetProfilesRes] = {
+  def getProfiles(withContent: Option[Boolean]): Future[Either[models.Error, GetProfilesRes]] = {
     val usernames = store.getAccounts().getOrElse(List.empty)
     if(withContent.getOrElse(true)) {
       val usernamesFutureList = usernames.map(user => instagramClient.getProfile(user))
       val usernamesFuture = Future.sequence(usernamesFutureList)
       usernamesFuture.map(usernamesRes => {
-        val profiles = usernamesRes.flatten.map(toProfile(_))
-        GetProfilesRes(profiles = profiles)
+        val profiles = usernamesRes.flatMap(_.right.toOption).map(toProfile(_))
+        val res = GetProfilesRes(profiles = profiles)
+        Right(res)
       })
     } else {
       val profiles = usernames.map(toProfile(_))
-      Future.successful(GetProfilesRes(profiles = profiles))
+      Future.successful(Right(GetProfilesRes(profiles = profiles)))
     }
   }
 

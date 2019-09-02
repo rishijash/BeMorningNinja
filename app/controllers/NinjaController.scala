@@ -16,15 +16,18 @@ class NinjaController extends Controller {
   }
 
   def getProfiles(withContent: Option[Boolean]) = Action.async(parse.anyContent) { request =>
-    ninjaManager.getProfiles(withContent).map(res =>
-      Ok(Json.toJson(res))
-    )
+    ninjaManager.getProfiles(withContent).map(_.fold(
+      error => InternalServerError(Json.toJson(error)),
+      res => Ok(Json.toJson(res))
+    ))
+
   }
 
   def getProfile(username: String) = Action.async(parse.anyContent) { request =>
-    ninjaManager.getProfile(username).map(res =>
-      Ok(Json.toJson(res))
-    )
+    ninjaManager.getProfile(username).map(_.fold(
+      error => InternalServerError(Json.toJson(error)),
+      res => Ok(Json.toJson(res))
+    ))
   }
 
 

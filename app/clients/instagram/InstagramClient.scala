@@ -16,30 +16,38 @@ class InstagramClient {
 
   private val log = LoggerFactory.getLogger(this.getClass.getName)
 
-  def getProfile(username: String): Future[Option[InstagramProfile]] = {
+  def getProfile(username: String): Future[Either[models.Error, InstagramProfile]] = {
     val profileUrl = getUsernameRequestUrl(username)
-    sendRequest(profileUrl).map(response => {
-      response.flatMap(res => Json.parse(res.body).asOpt[InstagramProfile]
-      )
-    })
+    sendRequest(profileUrl).map(_.fold(
+      error => Left(error),
+      res => {
+        val profileOpt = Json.parse(res.body).asOpt[InstagramProfile]
+        if (profileOpt.isDefined) {
+          Right(profileOpt.get)
+        } else {
+          Left(models.Error("INSTAGRAM_API_ERROR", "Error to deserialize Profile"))
+        }
+      }
+    ))
   }
 
-  private def sendRequest(url: String): Future[Option[Response]] = {
+  private def sendRequest(url: String): Future[Either[models.Error, Response]] = {
     Future {
       try {
         val result = Http(url)
           .header("Accept", "application/json")
           .option(HttpOptions.readTimeout(4000)).asString
         if (result.code == 200) {
-          Some(Response(result.code.toString, result.body))
+          Right(Response(result.code.toString, result.body))
         } else {
-          log.error(s"Error is getting profile from Instagram url: ${url}")
-          None
+          val msg = s"Error is getting profile from Instagram url: ${url}"
+          log.error(msg)
+          Left(models.Error("INSTAGRAM_API_ERROR", msg))
         }
       } catch {
         case e: Exception => {
-          log.error(s"Error is getting profile from Instagram url: ${url} with Exception: ${e.getMessage}")
-          None
+          val msg = s"Error is getting profile from Instagram url: ${url} with Exception: ${e.getMessage}"
+          Left(models.Error("INSTAGRAM_API_ERROR", msg))
         }
       }
     }
