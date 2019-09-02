@@ -7,6 +7,7 @@ import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import scalaj.http.{Http, HttpOptions}
+import util.HtmlUtil
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -23,7 +24,7 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
     sendRequest(profileUrl).map(_.fold(
       error => Left(error),
       res => {
-        val profileOpt = Json.parse(res.body).asOpt[InstagramProfile]
+        val profileOpt = Json.parse(res.body).validateOpt[InstagramProfile].asOpt.flatten
         if (profileOpt.isDefined) {
           Right(profileOpt.get)
         } else {
@@ -31,6 +32,46 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
         }
       }
     ))
+  }
+
+  def getInstagramProfileWeb(username: String): Future[Either[models.Error, InstagramProfile]] = {
+    val profileUrl = getUsernameRequestUrlWeb(username)
+    try {
+      HtmlUtil.getHtmlFromUrl(profileUrl).map(htmlRes => {
+        if (htmlRes.isDefined) {
+          val html = htmlRes.get
+          val startKeyIndex = html.indexOf("{\"logging_page_id\"")
+          val endKeyIndex = html.indexOf("]},\"hostname\":\"")
+          val subStringHtml = html.substring(startKeyIndex, endKeyIndex)
+          val profileOpt = Json.parse(subStringHtml).validateOpt[InstagramProfile].asOpt.flatten
+          if (profileOpt.isDefined) {
+            Right(profileOpt.get)
+          } else {
+            Left(models.Error("INSTAGRAM_API_ERROR", "Error to deserialize Profile"))
+          }
+        } else {
+          val msg = s"Error in getting profile from Instagram url: ${profileUrl}"
+          Left(models.Error("INSTAGRAM_API_ERROR", msg))
+        }
+      })
+    } catch {
+      case e: Exception => {
+        val msg = s"Error in getting profile from Instagram url: ${profileUrl} with Exception: ${e.getMessage}"
+        Future.successful(Left(models.Error("INSTAGRAM_API_ERROR", msg)))
+      }
+    }
+  }
+
+  def getVideLinkWebSync(postUrl: String): Option[String] = {
+    val htmlFuture = HtmlUtil.getHtmlFromUrl(postUrl)
+    val htmlRes = Await.result(htmlFuture, 2.seconds)
+    htmlRes.map(html => {
+      val startKeyIndex = html.indexOf("https://scontent.cdninstagram.com/v")
+      val subStringHtml = html.substring(startKeyIndex, html.length)
+      val endKeyIndex = subStringHtml.indexOf("\"")
+      val url = subStringHtml.substring(0, endKeyIndex).replaceAll("\\\\u0026", "&")
+      url
+    })
   }
 
   private def sendRequest(url: String): Future[Either[models.Error, Response]] = {
@@ -59,4 +100,6 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
   private def getUsernameRequestUrl(username: String): String =
     s"${baseUrl}${username}/?__a=1"
 
+  private def getUsernameRequestUrlWeb(username: String): String =
+    s"${baseUrl}${username}/"
 }

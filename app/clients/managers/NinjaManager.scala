@@ -5,10 +5,8 @@ import com.google.inject.Inject
 import datastore.NinjaStore
 import models.{GetProfileRes, GetProfilesRes, Profile, SelectedMedia}
 import play.api.libs.ws.WSClient
-import util.HtmlUtil
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class NinjaManager @Inject()(implicit ws: WSClient) {
@@ -17,7 +15,7 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
   private lazy val store = new NinjaStore()
 
   def getProfile(username: String): Future[Either[models.Error, GetProfileRes]] = {
-    instagramClient.getProfile(username).map(_.fold(
+    instagramClient.getInstagramProfileWeb(username).map(_.fold(
       error => Left(error),
       instagramProfile => {
         val profile = toProfile(instagramProfile, true)
@@ -30,7 +28,7 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
   def getProfiles(withContent: Option[Boolean]): Future[Either[models.Error, GetProfilesRes]] = {
     val usernames = store.getAccounts().getOrElse(List.empty)
     if (withContent.getOrElse(true)) {
-      val usernamesFutureList = usernames.map(user => instagramClient.getProfile(user))
+      val usernamesFutureList = usernames.map(user => instagramClient.getInstagramProfileWeb(user))
       val usernamesFuture = Future.sequence(usernamesFutureList)
       usernamesFuture.map(usernamesRes => {
         val profiles = usernamesRes.flatMap(_.right.toOption).map(toProfile(_))
@@ -87,20 +85,8 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
       SelectedMedia(
         displayUrl = l.node.display_url,
         instagramPostUrl = postUrl,
-        videoLink = if (includeVideoLink) getVideLink(postUrl) else None
+        videoLink = if (includeVideoLink) instagramClient.getVideLinkWebSync(postUrl) else None
       )
-    })
-  }
-
-  private def getVideLink(postUrl: String): Option[String] = {
-    val htmlFuture = HtmlUtil.getHtmlFromUrl(postUrl)
-    val htmlRes = Await.result(htmlFuture, 2.seconds)
-    htmlRes.map(html => {
-      val startKeyIndex = html.indexOf("https://scontent.cdninstagram.com/v")
-      val subStringHtml = html.substring(startKeyIndex, html.length)
-      val endKeyIndex = subStringHtml.indexOf("\"")
-      val url = subStringHtml.substring(0, endKeyIndex).replaceAll("\\\\u0026", "&")
-      url
     })
   }
 
