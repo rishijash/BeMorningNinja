@@ -36,7 +36,6 @@ class InstagramClient {
       try {
         val result = Http(url)
           .header("Accept", "application/json")
-          .option(HttpOptions.followRedirects(true))
           .option(HttpOptions.readTimeout(4000)).asString
         if (result.code == 200) {
           Right(Response(result.code.toString, result.body))
