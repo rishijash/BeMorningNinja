@@ -7,11 +7,11 @@ Notes:
     - "Alarm Clock" font from dafont.com, created by David J. Patterson ( http://www.dafont.com/alarm-clock.font )
  */
 
-document.addEventListener("DOMContentLoaded", function () {
+// Constants
+var retryCount = 2;
+var serverBaseUrl = "https://bemorningninja.herokuapp.com/";
 
-    // Constants
-    var retryCount = 2;
-    var serverBaseUrl = "https://bemorningninja.herokuapp.com/";
+document.addEventListener("DOMContentLoaded", function () {
 
     // Helpers
     var currentUsername = "";
@@ -270,4 +270,24 @@ document.addEventListener("DOMContentLoaded", function () {
         this.responseText = responseText;
     }
 
+});
+
+// Account Constructor
+function Account(username, gym, sleepy) {
+    this.username = username;
+    this.gym = gym;
+    this.sleepy = sleepy;
+}
+
+$(document).ready(function(){
+    // Append List of Accounts
+    var accounts = [];
+    var url = serverBaseUrl + "accounts";
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function(result) {
+            alert(result);
+        }
+    });
 });
