@@ -55,6 +55,7 @@ class NinjaStore {
        |}
     """.stripMargin
 
+  final val tempFile = File.createTempFile("beMorningNinjaKey", ".json")
   final val writer: BufferedWriter = new BufferedWriter(new FileWriter(tempFile.getAbsolutePath))
   writer.write(createKeyFileData)
   writer.close()
