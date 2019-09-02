@@ -53,6 +53,6 @@ class InstagramClient {
     }
   }
 
-  private def getUsernameRequestUrl(username: String): String = s"${baseUrl}${username}/?__a=1"
+  private def getUsernameRequestUrl(username: String): String = s"${baseUrl}${username}?__a=1"
 
 }
