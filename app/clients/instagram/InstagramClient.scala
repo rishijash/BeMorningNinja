@@ -40,7 +40,7 @@ class InstagramClient {
         if (result.code == 200) {
           Right(Response(result.code.toString, result.body))
         } else {
-          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code}"
+          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code} and body: ${result.body}"
           log.error(msg)
           Left(models.Error("INSTAGRAM_API_ERROR", msg))
         }
