@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
             var time = new Date();
 
             if (alarmAMPM.value == "PM"){
-                time.setHours(alarmHours.value + 12);
+                time.setHours(parseInt(alarmHours.value) + 12);
             }
             else {
                 time.setHours(alarmHours.value);
@@ -144,6 +144,7 @@ document.addEventListener("DOMContentLoaded", function() {
             time.setSeconds(0);
 
 
+            alert(time);
             // Create new alarm object and store it in alarms[]
             var newAlarm = new Alarm(time, alarmName.value);
             alarms.push(newAlarm);
