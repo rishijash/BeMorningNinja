@@ -1,7 +1,7 @@
 /* Fonts */
 @font-face {
     font-family: 'Digital';
-    src: url("assets/alarm_clock.ttf") format("truetype");
+    src: url("alarm_clock.ttf") format("truetype");
 }
 
 /* Quick reset */
