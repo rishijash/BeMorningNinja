@@ -284,8 +284,8 @@ $(document).ready(function(){
     var accounts = [];
     var url = serverBaseUrl + "accounts";
     var result = httpGet(url);
-    alert(result.responseText);
-    var jsonObj = JSON.parse(result.responseText);
+    alert(result);
+    var jsonObj = JSON.parse(result);
     var jsonArr = jsonObj.accounts;
     alert(jsonArr.length);
     for (i in JsonArr) {
