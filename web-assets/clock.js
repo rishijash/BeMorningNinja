@@ -10,7 +10,7 @@ Notes:
 // Constants
 var retryCount = 2;
 var serverBaseUrl = "https://bemorningninja.herokuapp.com/";
-var quoteBaseUrl = "http://quotes.rest/qod?category=inspire";
+var quoteBaseUrl = "https://quotes.rest/qod?category=inspire";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -237,7 +237,7 @@ function quoteAction(alarmPlayerBody, happyMorning) {
                     alarmPlayerTitle.innerText = "Not enough inspired.. Let's change that! 😉";
                     $("#alarmPlayerFooter").hide();
                     var quote = quotes[0].quote;
-                    alarmPlayerBody.innerHTML = "<br><h3><i>\"" + quote + "\"</i></h3><br><br>";
+                    alarmPlayerBody.innerHTML = "<br><h3><i>\"" + quote + "\"</i></h3><br><br>Quotes by: <a hre='http://quotes.rest'>Quotes.rest</a>";
                     setTimeout(function() {
                         $("#alarmPlayer").modal('toggle');
                     }, 10000);
