@@ -290,8 +290,8 @@ $(document).ready(function(){
         for (i in jsonArr) {
             var account = jsonArr[i];
             var username = account.username;
-            var maybeGymCount = username.gymCount;
-            var maybeSleepyCount = username.sleepyCount;
+            var maybeGymCount = account.gymCount;
+            var maybeSleepyCount = account.sleepyCount;
             var gymCount = 0;
             var sleepCount = 0;
             if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
