@@ -309,7 +309,7 @@ $(document).ready(function(){
     for (i in accounts) {
         var opt = document.createElement('option');
         var textValue = accounts[i].username + " Gym: " + accounts[i].gym + " Sleepy: " + accounts[i].sleepy;
-        opt.value = textValue;
+        opt.value = accounts[i].username;
         opt.innerHTML = textValue;
         nameList.appendChild(opt);
     }
