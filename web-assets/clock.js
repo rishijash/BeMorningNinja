@@ -287,7 +287,7 @@ $(document).ready(function(){
     $.ajax({
         url: url,
         type: 'GET',
-        success: function(result) {
+        success: function(result, status, xhr) {
             var jsonObj = JSON.parse(result);
             var jsonArr = jsonObj.accounts;
             for (i in jsonArr) {
