@@ -286,7 +286,7 @@ $(document).ready(function(){
     var url = serverBaseUrl + "accounts";
     $.ajax({
         url: url,
-        type: 'PUT',
+        type: 'GET',
         success: function(result) {
             var jsonObj = JSON.parse(result);
             var jsonArr = jsonObj.accounts;
