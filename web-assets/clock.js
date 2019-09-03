@@ -284,14 +284,11 @@ $(document).ready(function(){
     var accounts = [];
     var url = serverBaseUrl + "accounts";
     var result = httpGet(url);
-    alert(result);
     var jsonObj = JSON.parse(result);
     var jsonArr = jsonObj.accounts;
-    alert(jsonArr.length);
-    for (i in JsonArr) {
+    for (i in jsonArr) {
         var account = jsonArr[i];
         var username = account.username;
-        alert(username);
         var maybeGymCount = username.gymCount;
         var maybeSleepyCount = username.sleepyCount;
         var gymCount = 0;
