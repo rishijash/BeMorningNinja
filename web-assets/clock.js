@@ -288,7 +288,7 @@ $(document).ready(function(){
         url: url,
         type: 'GET',
         success: function(result, status, xhr) {
-            var jsonObj = JSON.parse(result);
+            var jsonObj = JSON.parse(JSON.stringify(result));
             var jsonArr = jsonObj.accounts;
             for (i in jsonArr) {
                 var account = jsonArr[i];
