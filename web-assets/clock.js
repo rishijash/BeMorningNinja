@@ -215,46 +215,48 @@ document.addEventListener("DOMContentLoaded", function () {
         alarmPlayerBody.innerHTML = "";
     });
 
-    function getVideoLinkFromInstagram(username) {
-        var finalPostLink = "";
-        var finalDisplayUrl = "";
-        var finalSummary = "";
-        var instagramUserProfileUrl = "https://www.instagram.com/" + username + "/?__a=1";
-        var instagramJsonStr = httpGet(instagramUserProfileUrl);
-        var instagramJson = JSON.parse(instagramJsonStr);
-        var graphql = instagramJson.graphql;
-        var user = graphql.user;
-        var profile_pic_url_hd = user.profile_pic_url_hd;
-        var biography = user.biography;
-        var edge_felix_video_timeline = user.edge_felix_video_timeline;
-        var edges = edge_felix_video_timeline.edges;
-        for (i in edges) {
-            edge = edges[i];
-            var node = edge.node;
-            var shortcode = node.shortcode;
-            var display_url = node.display_url;
-            var is_video = node.is_video;
-            if (is_video == true) {
-                finalPostLink = "https://www.instagram.com/p/" + shortcode + "/"
-                break;
-            }
-        }
-        var instagramPostUrl = finalPostLink;
-        var instagramHtmlStr = httpGet(instagramPostUrl);
-        var startIndex = instagramHtmlStr.indexOf("https://scontent.cdninstagram.com/v");
-        var subStringHtml = instagramHtmlStr.substring(startIndex, instagramHtmlStr.length);
-        var endIndex = subStringHtml.indexOf("\"");
-        var urlStr = subStringHtml.substring(0, endIndex).replace("\\u0026", "&").replace("\\u0026", "&");
-        return urlStr;
-    }
-
 });
 
+function getVideoLinkFromInstagram(username) {
+    var finalPostLink = "";
+    var finalDisplayUrl = "";
+    var finalSummary = "";
+    var instagramUserProfileUrl = "https://www.instagram.com/" + username + "/?__a=1";
+    var instagramJsonStr = httpGet(instagramUserProfileUrl);
+    var instagramJson = JSON.parse(instagramJsonStr);
+    var graphql = instagramJson.graphql;
+    var user = graphql.user;
+    var profile_pic_url_hd = user.profile_pic_url_hd;
+    var biography = user.biography;
+    var edge_felix_video_timeline = user.edge_felix_video_timeline;
+    var edges = edge_felix_video_timeline.edges;
+    for (i in edges) {
+        edge = edges[i];
+        var node = edge.node;
+        var shortcode = node.shortcode;
+        var display_url = node.display_url;
+        var is_video = node.is_video;
+        if (is_video == true) {
+            finalPostLink = "https://www.instagram.com/p/" + shortcode + "/"
+            break;
+        }
+    }
+    var instagramPostUrl = finalPostLink;
+    var instagramHtmlStr = httpGet(instagramPostUrl);
+    var startIndex = instagramHtmlStr.indexOf("https://scontent.cdninstagram.com/v");
+    var subStringHtml = instagramHtmlStr.substring(startIndex, instagramHtmlStr.length);
+    var endIndex = subStringHtml.indexOf("\"");
+    var urlStr = subStringHtml.substring(0, endIndex).replace("\\u0026", "&").replace("\\u0026", "&");
+    return urlStr;
+}
+
 // Account Constructor
-function Account(username, gym, sleepy) {
+function Account(username, gym, sleepy, picture, summary) {
     this.username = username;
     this.gym = gym;
     this.sleepy = sleepy;
+    this.picture = picture;
+    this.summary = summary;
 }
 
 function httpGet(theUrl) {
@@ -296,7 +298,9 @@ $(document).ready(function(){
             var sleepCount = 0;
             if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
             if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
-            var accountObj = new Account(username, gymCount, sleepCount);
+            var picture = account.accountPicture;
+            var summary = account.accountSummary;
+            var accountObj = new Account(username, gymCount, sleepCount, picture, summary);
             accounts.push(accountObj);
         }
     }
@@ -308,7 +312,7 @@ $(document).ready(function(){
     var nameList = document.getElementById('alarm_name');
     for (i in accounts) {
         var opt = document.createElement('option');
-        var textValue = accounts[i].username + " Gym: " + accounts[i].gym + " Sleepy: " + accounts[i].sleepy;
+        var textValue = accounts[i].username + " Gym: " + accounts[i].gym + " Sleepy: " + accounts[i].sleepy + " Picture: " + accounts[i].picture + " Summary: " + accounts[i].summary;
         opt.value = accounts[i].username;
         opt.innerHTML = textValue;
         nameList.appendChild(opt);
