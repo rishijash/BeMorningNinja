@@ -119,9 +119,9 @@ class NinjaStore {
         val docData = (for {
           genre <- maybeAccount.get.genre
         } yield {
-          new util.HashMap[String, Any](Map(usernameKey -> username, genreKey -> genre, thumbsUpCountKey -> thumbsupCount, gymCountKey -> gymCount, sleepyCountKey -> sleepyCount))
+          new util.HashMap[String, Any](Map(usernameKey -> username, genreKey -> genre, thumbsUpCountKey -> thumbsupCount, gymCountKey -> gymCount, sleepyCountKey -> sleepyCount, accountPictureKey -> maybeAccount.get.accountPicture, accountSummaryKey -> maybeAccount.get.accountSummary))
         }).getOrElse({
-          new util.HashMap[String, Any](Map(usernameKey -> username, thumbsUpCountKey -> thumbsupCount, gymCountKey -> gymCount, sleepyCountKey -> sleepyCount))
+          new util.HashMap[String, Any](Map(usernameKey -> username, thumbsUpCountKey -> thumbsupCount, gymCountKey -> gymCount, sleepyCountKey -> sleepyCount, accountPictureKey -> maybeAccount.get.accountPicture, accountSummaryKey -> maybeAccount.get.accountSummary))
         })
         firebaseClient.collection(accountsCollection).document(maybeAccount.get.dataId).set(docData)
         true
