@@ -283,39 +283,41 @@ function HttpRes(status, responseText) {
 
 $(document).ready(function(){
     var accounts = [];
-    try {
-        // Append List of Accounts
-        var url = serverBaseUrl + "accounts";
-        var result = httpGet(url);
-        var jsonObj = JSON.parse(result);
-        var jsonArr = jsonObj.accounts;
-        for (i in jsonArr) {
-            var account = jsonArr[i];
-            var username = account.username;
-            var maybeGymCount = account.gymCount;
-            var maybeSleepyCount = account.sleepyCount;
-            var gymCount = 0;
-            var sleepCount = 0;
-            if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
-            if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
-            var picture = account.accountPicture;
-            var summary = account.accountSummary;
-            var accountObj = new Account(username, gymCount, sleepCount, picture, summary);
-            accounts.push(accountObj);
+    var url = serverBaseUrl + "accounts";
+    $.ajax({
+        url: url,
+        type: 'PUT',
+        success: function(result) {
+            var jsonObj = JSON.parse(result);
+            var jsonArr = jsonObj.accounts;
+            for (i in jsonArr) {
+                var account = jsonArr[i];
+                var username = account.username;
+                var maybeGymCount = account.gymCount;
+                var maybeSleepyCount = account.sleepyCount;
+                var gymCount = 0;
+                var sleepCount = 0;
+                if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
+                if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
+                var picture = account.accountPicture;
+                var summary = account.accountSummary;
+                var accountObj = new Account(username, gymCount, sleepCount, picture, summary);
+                accounts.push(accountObj);
+            }
+        },
+        error: function (jqXHR, status, err) {
+            accounts.push(new Account("garyvee", 0, 0, "", ""))
+        },
+        complete: function (jqXHR, status) {
+            // Render accounts list
+            var nameList = document.getElementById('alarm_name');
+            for (i in accounts) {
+                var opt = document.createElement('option');
+                var textValue = accounts[i].username + " Gym: " + accounts[i].gym + " Sleepy: " + accounts[i].sleepy + " Picture: " + accounts[i].picture + " Summary: " + accounts[i].summary;
+                opt.value = accounts[i].username;
+                opt.innerHTML = textValue;
+                nameList.appendChild(opt);
+            }
         }
-    }
-    catch(err) {
-        if(accounts.length == 0)
-            accounts.push(new Account("garyvee", 0, 0))
-    }
-    // Render accounts list
-    var nameList = document.getElementById('alarm_name');
-    for (i in accounts) {
-        var opt = document.createElement('option');
-        var textValue = accounts[i].username + " Gym: " + accounts[i].gym + " Sleepy: " + accounts[i].sleepy + " Picture: " + accounts[i].picture + " Summary: " + accounts[i].summary;
-        opt.value = accounts[i].username;
-        opt.innerHTML = textValue;
-        nameList.appendChild(opt);
-    }
-
+    });
 });
