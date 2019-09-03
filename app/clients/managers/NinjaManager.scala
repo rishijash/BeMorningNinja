@@ -4,7 +4,7 @@ import clients.Response
 import clients.instagram.{InstagramClient, InstagramProfile}
 import com.google.inject.Inject
 import datastore.NinjaStore
-import models.{Account, GetProfileRes, GetProfilesRes, Ninja, Profile, SelectedMedia}
+import models.{Account, AccountsResponse, GetProfileRes, GetProfilesRes, Ninja, Profile, SelectedMedia}
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.Future
@@ -26,11 +26,11 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     ))
   }
 
-  def getAccounts(): Future[Either[models.Error, List[Account]]] = {
+  def getAccounts(): Future[Either[models.Error, AccountsResponse]] = {
     Future {
       val accounts = store.getAccounts()
       if(accounts.isDefined) {
-        Right(accounts.get)
+        Right(AccountsResponse(accounts.get))
       } else {
         Left(models.Error("ACCOUNT_ERROR", s"ACCOUNTS not found."))
       }
