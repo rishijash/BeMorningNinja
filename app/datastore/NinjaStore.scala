@@ -27,6 +27,8 @@ class NinjaStore {
   private val thumbsUpCountKey = "thumbsUp"
   private val sleepyCountKey = "sleepyCount"
   private val gymCountKey = "gymCount"
+  private val accountPictureKey = "accountPicture"
+  private val accountSummaryKey = "accountSummary"
 
   private val ninjaCollection = "ninjas"
   private val ninjaIdKey = "ninjaId"
@@ -69,12 +71,15 @@ class NinjaStore {
       val allData = firebaseClient.collection(accountsCollection).get().get()
       val allDocuments = allData.getDocuments.toList
       val usernamesData = allDocuments.map(d => {
-        val username = d.getData.get(usernameKey).toString
+        val username = d.get(usernameKey).toString
         val genre = Option(d.get(genreKey)).map(_.toString).filter(_.nonEmpty)
         val gymCount = Option(d.get(gymCountKey)).map(_.toString.toInt)
         val sleepyCount = Option(d.get(sleepyCountKey)).map(_.toString.toInt)
         val thumbsupCount = Option(d.get(thumbsUpCountKey)).map(_.toString.toInt)
-        Account(d.getId, username, genre, thumbsupCount, sleepyCount, gymCount)
+        val accountPicture = d.get(accountPictureKey).toString
+        val accountSummary = Option(d.get(accountSummaryKey)).map(_.toString).filter(_.nonEmpty).getOrElse("")
+
+        Account(d.getId, username, accountPicture, accountSummary, genre, thumbsupCount, sleepyCount, gymCount)
       })
       Some(usernamesData)
     } catch {
@@ -93,7 +98,9 @@ class NinjaStore {
         val gymCount = Option(d.get(gymCountKey)).map(_.toString.toInt)
         val sleepyCount = Option(d.get(sleepyCountKey)).map(_.toString.toInt)
         val thumbsupCount = Option(d.get(thumbsUpCountKey)).map(_.toString.toInt)
-        Account(d.getId, username, genre, thumbsupCount, sleepyCount, gymCount)
+        val accountPicture = d.get(accountPictureKey).toString
+        val accountSummary = Option(d.get(accountSummaryKey)).map(_.toString).filter(_.nonEmpty).getOrElse("")
+        Account(d.getId, username, accountPicture, accountSummary, genre, thumbsupCount, sleepyCount, gymCount)
       })
     } catch {
       case e: Exception =>
