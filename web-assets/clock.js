@@ -10,6 +10,7 @@ Notes:
 // Constants
 var retryCount = 2;
 var serverBaseUrl = "https://bemorningninja.herokuapp.com/";
+var quoteBaseUrl = "http://quotes.rest/qod?category=inspire";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -104,7 +105,12 @@ document.addEventListener("DOMContentLoaded", function () {
         // Format values
         if (timeHours > 12) {
             timeHoursDisplay -= 12;
-            ampm = 'PM'
+            ampm = 'PM';
+        }
+        if (timeHours == 0) {
+            timeHoursDisplay = 12;
+            timeHours = 12;
+            ampm = 'AM';
         }
 
         if (timeMinutes < 10) {
@@ -189,6 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $('#strongMorning').click(function(){
         //Some code
+        var alarmPlayerBody = document.getElementById("alarmPlayerBody");
         var url = serverBaseUrl + "accounts/" + currentUsername + "?gym=true";
         $.ajax({
             url: url,
@@ -196,13 +203,12 @@ document.addEventListener("DOMContentLoaded", function () {
             success: function(result) {
             }
         });
-        $("#alarmPlayer").modal('toggle');
-        var alarmPlayerBody = document.getElementById("alarmPlayerBody");
-        alarmPlayerBody.innerHTML = "";
+        quoteAction(alarmPlayerBody, true);
     });
 
     $('#lazyMorning').click(function(){
         //Some code
+        var alarmPlayerBody = document.getElementById("alarmPlayerBody");
         var url = serverBaseUrl + "accounts/" + currentUsername + "?sleepy=true";
         $.ajax({
             url: url,
@@ -210,12 +216,46 @@ document.addEventListener("DOMContentLoaded", function () {
             success: function(result) {
             }
         });
-        $("#alarmPlayer").modal('toggle');
-        var alarmPlayerBody = document.getElementById("alarmPlayerBody");
-        alarmPlayerBody.innerHTML = "";
+        quoteAction(alarmPlayerBody, false);
     });
 
 });
+
+function quoteAction(alarmPlayerBody, happyMorning) {
+    var alarmPlayerTitle = document.getElementById("alarmPlayerTitle");
+    if(!happyMorning) {
+        $.ajax({
+            url: quoteBaseUrl,
+            type: 'GET',
+            headers: {"Accept": "application/json"},
+            success: function(result) {
+                alarmPlayerBody.innerHTML = "";
+                var jsonObj = JSON.parse(JSON.stringify(result));
+                var contentsObj = jsonObj.contents;
+                var quotes = contentsObj.quotes;
+                if(quotes.length > 0) {
+                    alarmPlayerTitle.innerText = "Not enough inspired.. Let's change that! 😉";
+                    $("#alarmPlayerFooter").hide();
+                    var quote = quotes[0].quote;
+                    alarmPlayerBody.innerHTML = "<br><h3><i>\"" + quote + "\"</i></h3><br><br>";
+                    setTimeout(function() {
+                        $("#alarmPlayer").modal('toggle');
+                    }, 10000);
+                } else {
+                    $("#alarmPlayer").modal('toggle');
+                }
+            },
+            error: function (jqXHR, status, err) {
+                alarmPlayerBody.innerHTML = "";
+                $("#alarmPlayer").modal('toggle');
+            }
+        });
+    } else {
+        alarmPlayerBody.innerHTML = "";
+        $("#alarmPlayer").modal('toggle');
+    }
+
+}
 
 function getVideoLinkFromInstagram(username) {
     var finalPostLink = "";
