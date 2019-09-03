@@ -248,28 +248,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return urlStr;
     }
 
-    function httpGet(theUrl) {
-        var tryCount = 0;
-        var res = httpGetCall(theUrl);
-        while(tryCount < retryCount && res.status != 200) {
-            res = httpGetCall(theUrl)
-        }
-        return res.responseText;
-    }
-
-    function httpGetCall(url) {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open("GET", url, false); // false for synchronous request
-        xmlHttp.send(null);
-        return new HttpRes(xmlHttp.status, xmlHttp.responseText);
-    }
-
-    // Res Constructor
-    function HttpRes(status, responseText) {
-        this.status = status;
-        this.responseText = responseText;
-    }
-
 });
 
 // Account Constructor
@@ -279,32 +257,49 @@ function Account(username, gym, sleepy) {
     this.sleepy = sleepy;
 }
 
+function httpGet(theUrl) {
+    var tryCount = 0;
+    var res = httpGetCall(theUrl);
+    while(tryCount < retryCount && res.status != 200) {
+        res = httpGetCall(theUrl)
+    }
+    return res.responseText;
+}
+
+function httpGetCall(url) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("GET", url, false); // false for synchronous request
+    xmlHttp.send(null);
+    return new HttpRes(xmlHttp.status, xmlHttp.responseText);
+}
+
+// Res Constructor
+function HttpRes(status, responseText) {
+    this.status = status;
+    this.responseText = responseText;
+}
+
 $(document).ready(function(){
     // Append List of Accounts
     var accounts = [];
     var url = serverBaseUrl + "accounts";
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function(result) {
-            alert(result.body);
-            var jsonObj = JSON.parse(result.body);
-            var jsonArr = jsonObj.accounts;
-            alert(jsonArr.length);
-            for (i in JsonArr) {
-                var account = jsonArr[i];
-                var username = account.username;
-                alert(username);
-                var maybeGymCount = username.gymCount;
-                var maybeSleepyCount = username.sleepyCount;
-                var gymCount = 0;
-                var sleepCount = 0;
-                if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
-                if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
-                var accountObj = new Account(username, gymCount, sleepCount);
-                accounts.push(accountObj);
-            }
-            alert(accounts.length);
-        }
-    });
+    var result = httpGet(url);
+    alert(result.response);
+    var jsonObj = JSON.parse(result.response);
+    var jsonArr = jsonObj.accounts;
+    alert(jsonArr.length);
+    for (i in JsonArr) {
+        var account = jsonArr[i];
+        var username = account.username;
+        alert(username);
+        var maybeGymCount = username.gymCount;
+        var maybeSleepyCount = username.sleepyCount;
+        var gymCount = 0;
+        var sleepCount = 0;
+        if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
+        if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
+        var accountObj = new Account(username, gymCount, sleepCount);
+        accounts.push(accountObj);
+    }
+    alert(accounts.length);
 });
