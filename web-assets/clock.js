@@ -280,23 +280,38 @@ function HttpRes(status, responseText) {
 }
 
 $(document).ready(function(){
-    // Append List of Accounts
     var accounts = [];
-    var url = serverBaseUrl + "accounts";
-    var result = httpGet(url);
-    var jsonObj = JSON.parse(result);
-    var jsonArr = jsonObj.accounts;
-    for (i in jsonArr) {
-        var account = jsonArr[i];
-        var username = account.username;
-        var maybeGymCount = username.gymCount;
-        var maybeSleepyCount = username.sleepyCount;
-        var gymCount = 0;
-        var sleepCount = 0;
-        if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
-        if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
-        var accountObj = new Account(username, gymCount, sleepCount);
-        accounts.push(accountObj);
+    try {
+        // Append List of Accounts
+        var url = serverBaseUrl + "accounts";
+        var result = httpGet(url);
+        var jsonObj = JSON.parse(result);
+        var jsonArr = jsonObj.accounts;
+        for (i in jsonArr) {
+            var account = jsonArr[i];
+            var username = account.username;
+            var maybeGymCount = username.gymCount;
+            var maybeSleepyCount = username.sleepyCount;
+            var gymCount = 0;
+            var sleepCount = 0;
+            if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
+            if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
+            var accountObj = new Account(username, gymCount, sleepCount);
+            accounts.push(accountObj);
+        }
     }
-    alert(accounts.length);
+    catch(err) {
+        if(accounts.length == 0)
+            accounts.push(new Account("garyvee", 0, 0))
+    }
+    // Render accounts list
+    var nameList = document.getElementById('alarm_name');
+    for (i in accounts) {
+        var opt = document.createElement('option');
+        var textValue = accounts[i].username + " Gym: " + accounts[i].gym + " Sleepy: " + accounts[i].sleepy;
+        opt.value = textValue;
+        opt.innerHTML = textValue;
+        nameList.appendChild(opt);
+    }
+
 });
