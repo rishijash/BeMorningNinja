@@ -287,7 +287,20 @@ $(document).ready(function(){
         url: url,
         type: 'GET',
         success: function(result) {
-            alert(result);
+            var jsonArr = JSON.parse(result.body);
+            for (i in JsonArr) {
+                var account = jsonArr[i];
+                var username = account.username;
+                var maybeGymCount = username.gymCount;
+                var maybeSleepyCount = username.sleepyCount;
+                var gymCount = 0;
+                var sleepCount = 0;
+                if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
+                if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
+                var accountObj = new Account(username, gymCount, sleepCount);
+                accounts.push(accountObj);
+            }
+            alert(accounts.length);
         }
     });
 });
