@@ -180,17 +180,15 @@ document.addEventListener("DOMContentLoaded", function () {
     function ringAlarm(alarmData) {
         // get Instagram Video File for Username
         if (!triggered) {
-            var x = document.getElementById("myAudio");
-            x.play();
             // get Video Link
-            // currentUsername = alarmData.getName();
-            // var url = getVideoLinkFromInstagram(alarmData.getName());
+            currentUsername = alarmData.getName();
+            var url = getVideoLinkFromInstagram(alarmData.getName());
             // Play it
-            // var alarmPlayerBody = document.getElementById("alarmPlayerBody");
-            // alarmPlayerBody.innerHTML = "<center><video id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
-            //     "                                Your browser does not support the video tag.\n" +
-            //     "                            </video></center>";
-            // $("#alarmPlayer").modal();
+            var alarmPlayerBody = document.getElementById("alarmPlayerBody");
+            alarmPlayerBody.innerHTML = "<center><video id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
+                "                                Your browser does not support the video tag.\n" +
+                "                            </video></center>";
+            $("#alarmPlayer").modal();
             triggered = true;
         }
     }
