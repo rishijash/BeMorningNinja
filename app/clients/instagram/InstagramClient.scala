@@ -7,11 +7,12 @@ import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import scalaj.http.{Http, HttpOptions}
-import util.HtmlUtil
+import util.{HtmlUtil, UserAgentUtil}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Random
 
 class InstagramClient @Inject() (implicit ws: WSClient) {
 
@@ -77,9 +78,10 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
   private def sendRequest(url: String): Future[Either[models.Error, Response]] = {
     Future {
       try {
+        val userAgent = Random.shuffle(UserAgentUtil.userAgents).head
         val result = Http(url)
           .header("Accept", "application/json")
-          .header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36")
+          .header("User-Agent", userAgent)
           .option(HttpOptions.readTimeout(4000)).asString
         if (result.is2xx) {
           Right(Response(result.code.toString, result.body))
