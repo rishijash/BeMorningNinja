@@ -10,6 +10,7 @@ case class SelectedMedia (
 
 case class Profile (
   username: String,
+  account: Option[Account],
   profileUrl: String,
   genre: Option[String],
   summary: Option[String],

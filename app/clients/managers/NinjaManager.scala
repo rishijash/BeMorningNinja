@@ -19,7 +19,8 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     instagramClient.getProfile(username).map(_.fold(
       error => Left(error),
       instagramProfile => {
-        val profile = toProfile(instagramProfile, true)
+        val account = store.getAccounts().flatMap(_.find(_.username == username))
+        val profile = toProfile(instagramProfile, account, true)
         val res = GetProfileRes(profile)
         Right(res)
       }
@@ -54,12 +55,15 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
       val usernamesFutureList = usernamesData.map(_.username).map(user => instagramClient.getProfile(user))
       val usernamesFuture = Future.sequence(usernamesFutureList)
       usernamesFuture.map(usernamesRes => {
-        val profiles = usernamesRes.flatMap(_.right.toOption).map(toProfile(_))
+        val profiles = usernamesRes.flatMap(usernameRes => {
+          val account = usernamesData.find(_.username == usernameRes.right.toOption.map(_.graphql.user.username).getOrElse(""))
+          usernameRes.right.toOption.map(instaProf => toProfile(instaProf, account))
+        })
         val res = GetProfilesRes(profiles = profiles)
         Right(res)
       })
     } else {
-      val profiles = usernamesData.map(d => toProfile(d.username, d.genre))
+      val profiles = usernamesData.map(d => toProfile(d.username, Some(d), d.genre))
       Future.successful(Right(GetProfilesRes(profiles = profiles)))
     }
   }
@@ -97,9 +101,10 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     }
   }
 
-  private def toProfile(instagramProfile: InstagramProfile, includeVideoLink: Boolean = false): Profile = {
+  private def toProfile(instagramProfile: InstagramProfile, account: Option[Account], includeVideoLink: Boolean = false): Profile = {
     Profile(
       username = instagramProfile.graphql.user.username,
+      account = account,
       profileUrl = s"${instagramClient.baseUrl}${instagramProfile.graphql.user.username}",
       genre = None,
       summary = instagramProfile.graphql.user.biography,
@@ -109,9 +114,10 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     )
   }
 
-  private def toProfile(username: String, genre: Option[String]): Profile = {
+  private def toProfile(username: String, account: Option[Account], genre: Option[String]): Profile = {
     Profile(
       username = username,
+      account = account,
       profileUrl = s"${instagramClient.baseUrl}${username}",
       genre = genre,
       summary = None,
