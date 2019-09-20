@@ -66,7 +66,12 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
       })
     } else {
       val profiles = usernamesData.map(d => toProfile(d.username, Some(d), d.genre))
-      Future.successful(Right(GetProfilesRes(profiles = profiles)))
+      // Sort profiles based on Likes Diff
+      val sortedProfiles = profiles.sortBy(p => {
+        p.account.flatMap(_.gymCount).getOrElse(0) - p.account.flatMap(_.sleepyCount).getOrElse(0)
+      }).reverse
+
+      Future.successful(Right(GetProfilesRes(profiles = sortedProfiles)))
     }
   }
 
