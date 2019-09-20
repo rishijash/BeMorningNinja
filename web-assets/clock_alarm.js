@@ -319,7 +319,6 @@ $(document).ready(function(){
         },
         complete: function (jqXHR, status) {
             // Render accounts list
-            var carouselList = document.getElementById('demo-carousel');
             for (i in accounts) {
                 var account = accounts[i];
                 var htmlChild = "<div class=\"carousel-item\">\n" +
@@ -337,7 +336,7 @@ $(document).ready(function(){
                     "\t\t\t\t\t\t</div>\n" +
                     "\t\t\t\t\t  </div>\n" +
                     "\t\t\t\t\t</div>";
-                carouselList.appendChild(htmlChild);
+                $("#demo-carousel").append(htmlChild);
             }
         }
     });
