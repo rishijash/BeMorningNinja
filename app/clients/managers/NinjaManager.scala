@@ -66,10 +66,13 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
       })
     } else {
       val profiles = usernamesData.map(d => toProfile(d.username, Some(d), d.genre))
-      // Sort profiles based on Likes Diff
-      val sortedProfiles = profiles.sortBy(p => {
-        p.account.flatMap(_.gymCount).getOrElse(0) - p.account.flatMap(_.sleepyCount).getOrElse(0)
-      }).reverse
+      // Sort profiles based on Points Diff
+      def sortByPoint(p1: Profile, p2: Profile) = {
+        val p1Pojnts = p1.account.flatMap(_.gymCount).getOrElse(0) - p1.account.flatMap(_.sleepyCount).getOrElse(0)
+        val p2Points = p2.account.flatMap(_.gymCount).getOrElse(0) - p2.account.flatMap(_.sleepyCount).getOrElse(0)
+        p1Pojnts > p2Points
+      }
+      val sortedProfiles = profiles.sortWith(sortByPoint)
 
       Future.successful(Right(GetProfilesRes(profiles = sortedProfiles)))
     }
