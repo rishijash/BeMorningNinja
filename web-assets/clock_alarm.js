@@ -313,12 +313,14 @@ $(document).ready(function(){
                 var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo);
                 accounts.push(accountObj);
             }
+            alert("Accounts added: " + accounts.length);
         },
         error: function (jqXHR, status, err) {
             alert("Something went wrong.. Please referesh the page!")
         },
         complete: function (jqXHR, status) {
             // Render accounts list
+            alert("Accounts to display: " + accounts.length);
             for (i in accounts) {
                 var account = accounts[i];
                 var htmlChild = "<div class=\"carousel-item\">\n" +
@@ -337,6 +339,7 @@ $(document).ready(function(){
                     "\t\t\t\t\t  </div>\n" +
                     "\t\t\t\t\t</div>";
                 $("#demo-carousel").append(htmlChild);
+                alert("next");
             }
             $('#demo-carousel').carousel({numVisible: 3});
             $('select').material_select();
