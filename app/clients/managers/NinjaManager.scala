@@ -61,22 +61,25 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
           val includeVideoLink = withSelectedContent.getOrElse(true)
           usernameRes.right.toOption.map(instaProf => toProfile(instaProf, account, includeVideoLink))
         })
-        val res = GetProfilesRes(profiles = profiles)
+        // Sort Profiles
+        val sortedProfiles = profiles.sortWith(sortByPoint)
+        val res = GetProfilesRes(profiles = sortedProfiles)
         Right(res)
       })
     } else {
       val profiles = usernamesData.map(d => toProfile(d.username, Some(d), d.genre))
-      // Sort profiles based on Points Diff
-      def sortByPoint(p1: Profile, p2: Profile) = {
-        val p1Pojnts = p1.account.flatMap(_.gymCount).getOrElse(0) - p1.account.flatMap(_.sleepyCount).getOrElse(0)
-        val p2Points = p2.account.flatMap(_.gymCount).getOrElse(0) - p2.account.flatMap(_.sleepyCount).getOrElse(0)
-        p1Pojnts > p2Points
-      }
+      // Sort Profiles
       val sortedProfiles = profiles.sortWith(sortByPoint)
-
       Future.successful(Right(GetProfilesRes(profiles = sortedProfiles)))
     }
   }
+
+  private def sortByPoint(p1: Profile, p2: Profile) = {
+    val p1Points = p1.account.flatMap(_.gymCount).getOrElse(0) - p1.account.flatMap(_.sleepyCount).getOrElse(0)
+    val p2Points = p2.account.flatMap(_.gymCount).getOrElse(0) - p2.account.flatMap(_.sleepyCount).getOrElse(0)
+    p1Points > p2Points
+  }
+
 
   def getNinja(ninjaId: String): Future[Either[models.Error, Ninja]] = {
     Future {
