@@ -1,0 +1,80 @@
+<html>
+	<head>
+		<title>Alarm Clock</title>
+
+		<meta name = "viewport" content = "width = device-width, initial-scale = 1">
+
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="web-assets/clock_alarm.js"></script>
+		<link rel="stylesheet" href="clock.css">
+
+		<link rel = "stylesheet" href = "https://fonts.googleapis.com/icon?family=Material+Icons">
+		<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.4.0/lib/darkmode-js.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+	</head>
+	<body>  
+		<section id="settings">
+		<div class="container">
+			<div class = "row">
+				<div class="carousel influencer" id="demo-carousel">
+
+				</div>	
+				</div>
+				<div class = "row">
+					<div class="clock col s12 m6">
+					<div class="box">
+						<h1 id="wrapper">12:00:00</h1>
+					</div>
+					<div class="row">	
+						<div class="col s3 m3">
+							<input id="alarm_hours" type="number" name="quantity" min="0" max="12">	
+						</div>						
+						<div class="col s3 m3">
+							<input id="alarm_minutes" type="number" name="quantity" min="0" max="60" step="5">
+						</div>
+						<div class="col s3 m3">
+							<select id="alarm_ampm">
+								<option value="AM">AM</option>
+								<option value="PM">PM</option>
+							</select>
+						</div>
+						<div class="col s3 m3">
+							<button id="submit">Set Alarm</button>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12 m4 offset-m8">
+							<p class="clock_name">BeMorningNinja</p>
+						</div>
+					</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<script type="text/javascript">  
+			$(document).ready(function() {
+				$('#demo-carousel').carousel({numVisible: 3});
+				$('select').material_select();
+
+				new Darkmode().showWidget();
+				var safeColors = ['00','33','66','99','cc','ff'];
+				var rand = function() {
+					return Math.floor(Math.random()*6);
+				};
+				var r = safeColors[rand()];
+				var g = safeColors[rand()];
+				var b = safeColors[rand()];
+				$('clock').css('background-color',"#"+r+g+b);
+				
+			});
+			function showMsg(item) {
+				alert(item);
+			}
+      </script>
+	</body>   
+</html>
