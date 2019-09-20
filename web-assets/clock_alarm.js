@@ -338,7 +338,7 @@ $(document).ready(function(){
                     "\t\t\t\t\t</div>";
                 $("#demo-carousel").append(htmlChild);
             }
-            $('#demo-carousel').carousel({numVisible: 3});
+            $('#demo-carousel').carousel();
         }
     });
 });
