@@ -50,7 +50,7 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     }
   }
 
-  def getProfiles(withContent: Option[Boolean]): Future[Either[models.Error, GetProfilesRes]] = {
+  def getProfiles(withContent: Option[Boolean], withSelectedContent: Option[Boolean]): Future[Either[models.Error, GetProfilesRes]] = {
     val usernamesData = store.getAccounts().getOrElse(List.empty)
     if (withContent.getOrElse(true)) {
       val usernamesFutureList = usernamesData.map(_.username).map(user => instagramClient.getProfile(user))
@@ -58,7 +58,8 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
       usernamesFuture.map(usernamesRes => {
         val profiles = usernamesRes.flatMap(usernameRes => {
           val account = usernamesData.find(_.username == usernameRes.right.toOption.map(_.graphql.user.username).getOrElse(""))
-          usernameRes.right.toOption.map(instaProf => toProfile(instaProf, account))
+          val includeVideoLink = withSelectedContent.getOrElse(true)
+          usernameRes.right.toOption.map(instaProf => toProfile(instaProf, account, includeVideoLink))
         })
         val res = GetProfilesRes(profiles = profiles)
         Right(res)

@@ -17,8 +17,8 @@ class NinjaController @Inject()(implicit ws: WSClient) extends Controller {
     Future.successful(Ok("Let's get this BREAD!"))
   }
 
-  def getProfiles(withContent: Option[Boolean]) = Action.async(parse.anyContent) { request =>
-    ninjaManager.getProfiles(withContent).map(_.fold(
+  def getProfiles(withContent: Option[Boolean], withSelectedContent: Option[Boolean]) = Action.async(parse.anyContent) { request =>
+    ninjaManager.getProfiles(withContent, withSelectedContent).map(_.fold(
       error => InternalServerError(Json.toJson(error)),
       res => Ok(Json.toJson(res))
     ))
