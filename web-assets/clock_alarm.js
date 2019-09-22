@@ -154,11 +154,23 @@ document.addEventListener("DOMContentLoaded", function () {
         if(alarmText == "SET ALARM") {
             setAlarm();
             submit.innerText = "CANCEL";
+
+            // disable stuff
             $('#carouselRow').css("pointer-events","none");
+            $("#alarm_hours").prop("disabled", true);
+            $("#alarm_minutes").prop("disabled", true);
+            $("#alarm_ampm").prop("disabled", true);
+            $('select').material_select();
         } else {
             cancelAlarm();
             submit.innerText = "SET ALARM";
+
+            // enable stuff back
             $('#carouselRow').css("pointer-events","auto");
+            $("#alarm_hours").prop("disabled", false);
+            $("#alarm_minutes").prop("disabled", false);
+            $("#alarm_ampm").prop("disabled", false);
+            $('select').material_select();
         }
     }
 
