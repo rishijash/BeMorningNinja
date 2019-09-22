@@ -18,8 +18,15 @@ body{
     font-family: Arial, Helvetica, sans-serif;
 }
 .container{
-	background-color: #dbe4e6;
+    background-color: #dbe4e6;
 }
+
+.border-box{
+    background-color: #74b9ff;
+    border : 10px solid #74b9ff;
+    border-radius : 1px;
+}
+
 h1{
     font-family: 'Digital';
     font-size: 130px;
@@ -29,36 +36,31 @@ h1{
 h2,
 h3{
     color: #212120;
-    margin: 20px 0;	
 }
 
 .clock{
     padding: 5px;
     margin: auto;
     text-align: center;
-	background-color: #FF7F50;
-	border-radius:5px;
+    background-color: #74b9ff;
+    border-radius:5px;
 }
 .box{
-	background-color: #ffffff;
-	border-radius:5px;
-}
-.influencer{
-	min-height:490px;
-	margin-top:-100px;
+    background-color: #ffffff;
+    border-radius:5px;
 }
 #settings{
     background-color: #dbe4e6;
     height: 100%;
-    padding: 20px 0;
+
     margin: auto;
     text-align: center;
     overflow: auto;
 }
 .clock_name{
-	font-weight:700;
-	color:#000055;
-	font-size:18px;
+    font-weight:700;
+    color:#000055;
+    font-size:18px;
 }
 
 #settings select{ width: 100px; }
@@ -73,8 +75,6 @@ h3{
     #alarm_name{
         display: block;
         width: 210px;
-        margin: 20px auto;
-        padding: 10px 20px;
     }
 
     #submit{
