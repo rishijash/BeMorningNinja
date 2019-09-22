@@ -320,17 +320,11 @@ function renderAccountList(accounts) {
     for (i in accounts) {
         var account = accounts[i];
         var htmlChild = "<div class=\"carousel-item gray\" href=\"#one!\" >\n" +
-            "                            <div class=\"row\">\n" +
-            "                                <div class=\"col s12 m12\">\n" +
-            "                                    <div class=\"card\">\n" +
-            "                                        <div class=\"card-image\">\n" +
-            "                                            <img src=\"" + account.picture + "\" style=\"min-height: 300px; max-height: 300px;\">\n" +
-            "                                            <span class=\"card-title\"><u><a href='https://instagram.com/" + account.username + "' target='_blank'>@" + account.username + "</a></u></span>\n" +
-            "                                        </div>\n" +
-            "                                        <div class=\"\">\n" +
-            "                                            <p><i>" + account.summary + "</i></p>\n" +
-            "                                        </div>\n" +
-            "                                    </div>\n" +
+            "                            <div style=\"position: relative;\">\n" +
+            "                                <img src=\"" + account.picture + "\" height=\"100%\" width=\"100%\">\n" +
+            "                                <div class=\"img-card\" style=\"position: absolute; top: 70%; background-color: grey; height:30%; width: 100%; opacity: 0.85; text-align: left;\">\n" +
+            "                                    " + account.username + " <br/>\n" +
+            "                                    <i>" + account.summary + "</i> <br/>\n" +
             "                                </div>\n" +
             "                            </div>\n" +
             "                        </div>";
