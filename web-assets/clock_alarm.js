@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function checkAlarm() {
         var alarmText = submit.innerText;
-        alert(alarmText);
+
         if(alarmText == "SET ALARM") {
             setAlarm();
         } else {
