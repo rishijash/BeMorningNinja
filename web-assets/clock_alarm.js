@@ -153,24 +153,8 @@ document.addEventListener("DOMContentLoaded", function () {
         var alarmText = submit.innerText;
         if(alarmText == "SET ALARM") {
             setAlarm();
-            submit.innerText = "CANCEL";
-
-            // disable stuff
-            $('#carouselRow').css("pointer-events","none");
-            $("#alarm_hours").prop("disabled", true);
-            $("#alarm_minutes").prop("disabled", true);
-            $("#alarm_ampm").prop("disabled", true);
-            $('select').material_select();
         } else {
             cancelAlarm();
-            submit.innerText = "SET ALARM";
-
-            // enable stuff back
-            $('#carouselRow').css("pointer-events","auto");
-            $("#alarm_hours").prop("disabled", false);
-            $("#alarm_minutes").prop("disabled", false);
-            $("#alarm_ampm").prop("disabled", false);
-            $('select').material_select();
         }
     }
 
@@ -178,6 +162,15 @@ document.addEventListener("DOMContentLoaded", function () {
     function cancelAlarm() {
         alarmObj = null;
         alarmMessage.innerHTML = "";
+
+        submit.innerText = "SET ALARM";
+
+        // enable stuff back
+        $('#carouselRow').css("pointer-events","auto");
+        $("#alarm_hours").prop("disabled", false);
+        $("#alarm_minutes").prop("disabled", false);
+        $("#alarm_ampm").prop("disabled", false);
+        $('select').material_select();
     }
 
     // Set alarm
@@ -202,8 +195,17 @@ document.addEventListener("DOMContentLoaded", function () {
             // Update alarm message text
             alarmMessage.innerHTML = "All set! @" + currentUsername + " will wake you up!";
 
+            submit.innerText = "CANCEL";
+
+            // disable stuff
+            $('#carouselRow').css("pointer-events","none");
+            $("#alarm_hours").prop("disabled", true);
+            $("#alarm_minutes").prop("disabled", true);
+            $("#alarm_ampm").prop("disabled", true);
+            $('select').material_select();
+
         } else {
-            alert('ERROR: valid time needed to set an alarm');
+            alert('ERROR: Still loading the influencers..');
         }
     }
 
@@ -234,7 +236,17 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
         quoteAction(alarmPlayerBody, true);
+        cancelAlarm();
     });
+
+    $('#nextCarousel').click(function () {
+        $('.carousel.carousel-slider').carousel('next');
+    });
+
+    $('#prevCarousel').click(function () {
+        $('.carousel.carousel-slider').carousel('prev');
+    });
+
 
     $('#lazyMorning').click(function(){
         var alarmPlayerBody = document.getElementById("alarmPlayerBody");
@@ -246,6 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
         quoteAction(alarmPlayerBody, false);
+        cancelAlarm();
     });
 
 });
@@ -287,13 +300,14 @@ function quoteAction(alarmPlayerBody,           happyMorning) {
 }
 
 // Account Constructor
-function Account(username, gym, sleepy, picture, summary, selectedVideo) {
+function Account(username, gym, sleepy, picture, summary, selectedVideo, genre) {
     this.username = username;
     this.gym = gym;
     this.sleepy = sleepy;
     this.picture = picture;
     this.summary = summary;
     this.selectedVideo = selectedVideo;
+    this.genre = genre;
 }
 
 function httpGet(theUrl) {
@@ -337,7 +351,8 @@ function pushAccountData(result, fromAPI) {
         var picture = profile.account.accountPicture;
         var summary = profile.summary;
         var selectedVideo = profile.selectedVideoUrl.videoLink;
-        var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo);
+        var genre = profile.account.genre;
+        var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo, genre);
         accounts.push(accountObj);
     }
     return accounts;
@@ -351,8 +366,9 @@ function renderAccountList(accounts, slider) {
             "                            <div style=\"position: relative;\">\n" +
             "                                <img src=\"" + account.picture + "\" height=\"100%\" width=\"100%\">\n" +
             "                                <div class=\"img-card\" style=\" \">\n" +
-            "                                    " + account.username + " <br/>\n" +
-            "                                    " + account.summary + "<br/>\n" +
+            "                                    <h6><a target='_blank' style='color: white; text-decoration: underline; font-size: 18px;' href='https://instagram.com/" + account.username + "'>@" + account.username + "</a><span>&nbsp&nbsp 💪" + account.gym + " 😴" + account.sleepy + "</span></h6>\n" +
+            "                                    <h6 style='margin-top: 15px;'>Type: " + account.genre + "</h6>\n" +
+            "                                    <span class='summaryText'>" + account.summary + "</span>\n" +
             "                                </div>\n" +
             "                            </div>\n" +
             "                        </div>";
@@ -369,7 +385,6 @@ function renderAccountList(accounts, slider) {
             fallbackVideoUrl = accounts[cindex].selectedVideo;
         }
     });
-
 }
 
 $(document).ready(function(){
