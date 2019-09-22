@@ -347,7 +347,6 @@ $(document).ready(function(){
         url: url,
         type: 'GET',
         success: function(result, status, xhr) {
-            loader.show();
             accounts = pushAccountData(result, true);
         },
         error: function (jqXHR, status, err) {
