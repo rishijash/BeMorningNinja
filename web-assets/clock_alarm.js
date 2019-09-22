@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var alarmHours = document.getElementById('alarm_hours');
     var alarmMinutes = document.getElementById('alarm_minutes');
     var alarmAMPM = document.getElementById('alarm_ampm');
-    var submit = document.getElementById('submit');
+    var submit = document.getElementById('submitBtn');
     var alarmMessage = document.getElementById('alarm_message');
 
     var triggered = false;
