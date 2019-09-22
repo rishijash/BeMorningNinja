@@ -28,7 +28,10 @@
                     <div class="carousel carousel-slider col s12 m10 offset-m1">
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" id="mobileOnly">
+                    We support Desktop and Alexa.
+                </div>
+                <div class="row" id="desktopOnly">
                     <div class="clock col s12 m12">
                         <div class="box">
                             <h1 id="wrapper">12:00:00</h1>
@@ -143,21 +146,24 @@
 
         $('select').material_select();
 
-        new Darkmode().showWidget();
-        var safeColors = ['00', '33', '66', '99', 'cc', 'ff'];
-        var rand = function () {
-            return Math.floor(Math.random() * 6);
-        };
-        var r = safeColors[rand()];
-        var g = safeColors[rand()];
-        var b = safeColors[rand()];
-        $('clock').css('background-color', "#" + r + g + b);
+        // Dark Mode
+        var options = {
+            bottom: '64px', // default: '32px'
+            right: '32px', // default: '32px'
+            time: '0.5s', // default: '0.3s'
+            mixColor: '#fff', // default: '#fff'
+            backgroundColor: '#fff',  // default: '#fff'
+            buttonColorDark: '#000000',  // default: '#100f2c'
+            buttonColorLight: '#fff', // default: '#fff'
+            saveInCookies: false, // default: true,
+            label: '🌓', // default: ''
+            autoMatchOsTheme: true // default: true
+        }
+
+        const darkmode = new Darkmode(options);
+        darkmode.showWidget();
 
     });
-
-    function showMsg(item) {
-        alert(item);
-    };
 </script>
 
 <!-- Modal Structure -->

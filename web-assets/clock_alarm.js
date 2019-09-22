@@ -396,6 +396,15 @@ function renderAccountList(accounts, slider) {
 $(document).ready(function(){
     $('.modal').modal();
 
+    // Hide on mobile
+    var mobile = (/iphone|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+    if (!mobile) {
+        $('#mobileOnly').hide();
+    }
+     else {
+        $('#desktopOnly').hide();
+    }
+
     var slider = $('.carousel.carousel-slider');
     var loader = $('.loaderDiv');
     var accounts = [];
