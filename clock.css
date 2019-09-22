@@ -14,6 +14,17 @@ html{
     height: 100%;
 }
 
+.img-card {
+    padding: 10px;
+    position: absolute;
+    top: 70%;
+    background-color: grey;
+    height:30%;
+    width: 100%;
+    opacity: 0.85;
+    text-align: left;
+}
+
 body{
     font-family: Arial, Helvetica, sans-serif;
 }

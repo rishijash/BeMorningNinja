@@ -12,25 +12,24 @@ var retryCount = 2;
 var serverBaseUrl = "https://bemorningninja.herokuapp.com/";
 var quoteBaseUrl = "https://quotes.rest/qod?category=inspire";
 
-document.addEventListener("DOMContentLoaded", function () {
+// Helpers
+var currentUsername = "";
+var fallbackVideoUrl = "";
 
-    // Helpers
-    var currentUsername = "";
+document.addEventListener("DOMContentLoaded", function () {
 
     // Selectors
     var wrapper = document.getElementById('wrapper');
     var alarmHours = document.getElementById('alarm_hours');
     var alarmMinutes = document.getElementById('alarm_minutes');
-    var alarmName = document.getElementById('alarm_name');
     var alarmAMPM = document.getElementById('alarm_ampm');
     var submit = document.getElementById('submit');
     var alarmMessage = document.getElementById('alarm_message');
-    var alarmList = document.getElementById('alarm_list');
 
     var triggered = false;
 
     // Create array to store alarm times in
-    var alarms = [];
+    var alarmObj = null;
 
     // Create alarm elements
     createAlarmElements();
@@ -39,14 +38,15 @@ document.addEventListener("DOMContentLoaded", function () {
     renderTime();
     setInterval(renderTime, 1000);
 
-    // Set event listener for adding alarms
+    // Set event listener for adding alarm
     addListenerForInput();
 
     // Alarm constructor
-    function Alarm(hourArg, minArg, nameArg) {
+    function Alarm(hourArg, minArg, nameArg, fallbackVideoArg) {
         this.hourArg = hourArg;
         this.minArg = minArg;
         this.name = nameArg;
+        this.fallbackVideo = fallbackVideoArg;
 
         this.getHour = function () {
             return this.hourArg;
@@ -58,6 +58,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         this.getName = function () {
             return this.name;
+        };
+
+        this.getFallbackVideo = function() {
+            return this.fallbackVideo;
         }
     }
 
@@ -112,6 +116,9 @@ document.addEventListener("DOMContentLoaded", function () {
             timeHours = 12;
             ampm = 'AM';
         }
+        if (timeHours == 12) {
+            ampm = 'PM';
+        }
 
         if (timeMinutes < 10) {
             timeMinutesDisplay = '0' + timeMinutes;
@@ -126,12 +133,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Check if time matches alarm time
 
-        if (alarms.length > 0) {
-            for (var i = 0; i < alarms.length; i++) {
-                var checkAlarm = alarms[i];
-                if (checkAlarm.getHour() == timeHours && checkAlarm.getMinute() == timeMinutes) {
-                    ringAlarm(alarms[i]);
-                }
+        if (alarmObj != null) {
+            var checkAlarm = alarmObj;
+            if (checkAlarm.getHour() == timeHours && checkAlarm.getMinute() == timeMinutes) {
+                ringAlarm(alarmObj);
             }
         }
 
@@ -141,18 +146,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Add a listener to the alarm input
     function addListenerForInput() {
-        submit.addEventListener('click', setAlarm);
+        submit.addEventListener('click', checkAlarm);
+    }
+
+    function checkAlarm() {
+        var alarmText = submit.innerText;
+        if(alarmText == "SET ALARM") {
+            setAlarm();
+            submit.innerText = "CANCEL";
+            $('#carouselRow').css("pointer-events","none");
+        } else {
+            cancelAlarm();
+            submit.innerText = "SET ALARM";
+            $('#carouselRow').css("pointer-events","auto");
+        }
+    }
+
+    // Cancel Alarm
+    function cancelAlarm() {
+        alarmObj = null;
+        alarmMessage.innerHTML = "";
     }
 
     // Set alarm
     function setAlarm() {
-
-        if (alarmName.value && alarmHours.value && alarmMinutes.value && alarmAMPM.value) {
+        if (currentUsername.length > 0 && alarmHours.value && alarmMinutes.value && alarmAMPM.value) {
 
             var hour = 0;
             var minute = 0;
 
-            if (alarmAMPM.value == "PM") {
+            if (alarmAMPM.value == "PM" && alarmHours.value != 12) {
                 hour = parseInt(alarmHours.value) + 12;
             } else {
                 hour = parseInt(alarmHours.value);
@@ -160,19 +183,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             minute = parseInt(alarmMinutes.value);
 
-            // Create new alarm object and store it in alarms[]
-            var newAlarm = new Alarm(hour, minute, alarmName.value);
-            alarms.push(newAlarm);
+            // Create new alarm object
+            var newAlarm = new Alarm(hour, minute, currentUsername, fallbackVideoUrl);
+            alarmObj = newAlarm;
 
             // Update alarm message text
-            alarmMessage.innerHTML = "Your alarm";
+            alarmMessage.innerHTML = "All set! @" + currentUsername + " will wake you up!";
 
-            // Append date to list of dates in DOM
-            var newListItem = document.createElement('li');
-            newListItem.innerHTML = alarmName.value + " - " + alarmHours.value + ":" + alarmMinutes.value + " " + alarmAMPM.value;
-            alarmList.appendChild(newListItem);
         } else {
-            alert('ERROR: valid time and name needed to set an alarm');
+            alert('ERROR: valid time needed to set an alarm');
         }
     }
 
@@ -182,19 +201,18 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!triggered) {
             // get Video Link
             currentUsername = alarmData.getName();
-            var url = getVideoLinkFromInstagram(alarmData.getName());
+            var url = alarmData.getFallbackVideo();
             // Play it
             var alarmPlayerBody = document.getElementById("alarmPlayerBody");
             alarmPlayerBody.innerHTML = "<center><video id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
                 "                                Your browser does not support the video tag.\n" +
                 "                            </video></center>";
-            $("#alarmPlayer").modal();
+            $("#alarmPlayer").modal('open');
             triggered = true;
         }
     }
 
     $('#strongMorning').click(function(){
-        //Some code
         var alarmPlayerBody = document.getElementById("alarmPlayerBody");
         var url = serverBaseUrl + "accounts/" + currentUsername + "?gym=true";
         $.ajax({
@@ -207,7 +225,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     $('#lazyMorning').click(function(){
-        //Some code
         var alarmPlayerBody = document.getElementById("alarmPlayerBody");
         var url = serverBaseUrl + "accounts/" + currentUsername + "?sleepy=true";
         $.ajax({
@@ -237,22 +254,22 @@ function quoteAction(alarmPlayerBody,           happyMorning) {
                     alarmPlayerTitle.innerText = "Not enough inspired.. Let's change that! 😉";
                     $("#alarmPlayerFooter").hide();
                     var quote = quotes[0].quote;
-                    alarmPlayerBody.innerHTML = "<br><h3><i>\"" + quote + "\"</i></h3><br><br>Quotes by: <a hre='http://quotes.rest'>Quotes.rest</a>";
+                    alarmPlayerBody.innerHTML = "<br><h5><i>\"" + quote + "\"</i></h5><br><br>Quotes by: <a hre='http://quotes.rest'>Quotes.rest</a>";
                     setTimeout(function() {
-                        $("#alarmPlayer").modal('toggle');
+                        $("#alarmPlayer").modal('close');
                     }, 10000);
                 } else {
-                    $("#alarmPlayer").modal('toggle');
+                    $("#alarmPlayer").modal('close');
                 }
             },
             error: function (jqXHR, status, err) {
                 alarmPlayerBody.innerHTML = "";
-                $("#alarmPlayer").modal('toggle');
+                $("#alarmPlayer").modal('close');
             }
         });
     } else {
         alarmPlayerBody.innerHTML = "";
-        $("#alarmPlayer").modal('toggle');
+        $("#alarmPlayer").modal('close');
     }
 
 }
@@ -318,10 +335,10 @@ function renderAccountList(accounts, slider) {
     // Render accounts list
     for (i in accounts) {
         var account = accounts[i];
-        var htmlChild = "<div class=\"carousel-item gray\" href=\"#one!\" >\n" +
+        var htmlChild = "<div class=\"carousel-item\" data-cindex=\"" + i + "\">\n" +
             "                            <div style=\"position: relative;\">\n" +
             "                                <img src=\"" + account.picture + "\" height=\"100%\" width=\"100%\">\n" +
-            "                                <div class=\"img-card\" style=\"position: absolute; top: 70%; background-color: grey; height:30%; width: 100%; opacity: 0.85; text-align: left;\">\n" +
+            "                                <div class=\"img-card\" style=\" \">\n" +
             "                                    " + account.username + " <br/>\n" +
             "                                    " + account.summary + "<br/>\n" +
             "                                </div>\n" +
@@ -329,15 +346,23 @@ function renderAccountList(accounts, slider) {
             "                        </div>";
         slider.append(htmlChild);
     }
-    //remove the 'initialized' class which prevents slider from initializing itself again when it's not needed
     slider.carousel({
         fullWidth: false,
-        indicators: true
+        indicators: true,
+        onCycleTo: function(data) {
+            var cindex = $(data).data('cindex');
+            currentUsername = accounts[cindex].username;
+            var alarmMessage = document.getElementById('alarm_message');
+            alarmMessage.innerHTML = "Influencer Selected: @" + currentUsername;
+            fallbackVideoUrl = accounts[cindex].selectedVideo;
+        }
     });
 
 }
 
 $(document).ready(function(){
+    $('.modal').modal();
+
     var slider = $('.carousel.carousel-slider');
     var loader = $('.loaderDiv');
     var accounts = [];
