@@ -305,7 +305,7 @@ function pushAccountData(result, fromAPI) {
         var sleepCount = 0;
         if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
         if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
-        var picture = profile.profilePic;
+        var picture = profile.account.accountPicture;
         var summary = profile.summary;
         var selectedVideo = profile.selectedVideoUrl.videoLink;
         var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo);
@@ -325,9 +325,9 @@ function renderAccountList(accounts) {
             "                                    <div class=\"card\">\n" +
             "                                        <div class=\"card-image\">\n" +
             "                                            <img src=\"" + account.picture + "\" style=\"min-height: 300px; max-height: 300px;\">\n" +
-            "                                            <span class=\"card-title\">@" + account.username + "</span>\n" +
+            "                                            <span class=\"card-title\"><u><a href='https://instagram.com/" + account.username + "' target='_blank'>@" + account.username + "</a></u></span>\n" +
             "                                        </div>\n" +
-            "                                        <div class=\"card-content\">\n" +
+            "                                        <div class=\"\">\n" +
             "                                            <p><i>" + account.summary + "</i></p>\n" +
             "                                        </div>\n" +
             "                                    </div>\n" +

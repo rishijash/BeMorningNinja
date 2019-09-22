@@ -25,6 +25,7 @@ body{
     background-color: #74b9ff;
     border : 10px solid #74b9ff;
     border-radius : 1px;
+    margin-top: 10px;
 }
 
 h1{
@@ -39,8 +40,7 @@ h3{
 }
 
 .clock{
-    padding: 5px;
-    margin: auto;
+    margin: -30px auto;
     text-align: center;
     background-color: #74b9ff;
     border-radius:5px;
