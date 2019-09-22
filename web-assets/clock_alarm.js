@@ -263,8 +263,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-function quoteAction(alarmPlayerBody,           happyMorning) {
+function quoteAction(alarmPlayerBody, happyMorning) {
     var alarmPlayerTitle = document.getElementById("alarmPlayerTitle");
+    $("#alarmPlayerFooter").hide();
     if(!happyMorning) {
         $.ajax({
             url: quoteBaseUrl,
@@ -277,26 +278,30 @@ function quoteAction(alarmPlayerBody,           happyMorning) {
                 var quotes = contentsObj.quotes;
                 if(quotes.length > 0) {
                     alarmPlayerTitle.innerText = "Not enough inspired.. Let's change that! 😉";
-                    $("#alarmPlayerFooter").hide();
                     var quote = quotes[0].quote;
                     alarmPlayerBody.innerHTML = "<br><h5><i>\"" + quote + "\"</i></h5><br><br>Quotes by: <a hre='http://quotes.rest'>Quotes.rest</a>";
                     setTimeout(function() {
                         $("#alarmPlayer").modal('close');
-                    }, 10000);
+                    }, 7000);
                 } else {
-                    $("#alarmPlayer").modal('close');
+                    defaultGreetings();
                 }
             },
             error: function (jqXHR, status, err) {
-                alarmPlayerBody.innerHTML = "";
-                $("#alarmPlayer").modal('close');
+                defaultGreetings();
             }
         });
     } else {
-        alarmPlayerBody.innerHTML = "";
-        $("#alarmPlayer").modal('close');
+        defaultGreetings();
     }
 
+}
+
+function defaultGreetings() {
+    alarmPlayerBody.innerHTML = "<br><center><h5>Have a fantastic day!!!</h5></center>";
+    setTimeout(function() {
+        $("#alarmPlayer").modal('close');
+    }, 1000);
 }
 
 // Account Constructor
