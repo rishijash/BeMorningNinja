@@ -158,8 +158,8 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     val unixTime = System.currentTimeMillis / 1000L
     val latest = Option(list).filter(_.nonEmpty).map(_.minBy(e => math.abs(unixTime - e.node.taken_at_timestamp)))
     latest.map(l => {
-      // If latest video was posted in 6 hours use it else use random one
-      val selected = if (unixTime - l.node.taken_at_timestamp <= 21600) {
+      // If latest video was posted in 30 minutes use it else use random one
+      val selected = if (unixTime - l.node.taken_at_timestamp <= 1800) {
         l
       } else {
         Random.shuffle(list).head
