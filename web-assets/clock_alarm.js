@@ -12,6 +12,7 @@ var retryCount = 2;
 var serverBaseUrl = "https://bemorningninja.herokuapp.com/";
 var quoteBaseUrl = "https://quotes.rest/qod?category=inspire";
 var defaultMotivationAudio = "https://d3ctxlq1ktw2nl.cloudfront.net/production/2019-7-13/20842925-44100-2-225949da7b5c3.mp3";
+var defaultError = "Oppsss! Looks like we are overwhelmed. Please try again.. (Apologies)";
 
 // Helpers
 var currentUsername = "";
@@ -350,24 +351,28 @@ function pushAccountData(result, fromAPI) {
     if(!fromAPI) {
         jsonObj = JSON.parse(result);
     }
-    var jsonArr = jsonObj.profiles;
-    for (i in jsonArr) {
-        var profile = jsonArr[i];
-        var username = profile.username;
-        var maybeGymCount = profile.account.gymCount;
-        var maybeSleepyCount = profile.account.sleepyCount;
-        var gymCount = 0;
-        var sleepCount = 0;
-        if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
-        if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
-        var picture = profile.account.accountPicture;
-        var summary = profile.summary;
-        var selectedVideo = profile.selectedVideoUrl.videoLink;
-        var genre = profile.account.genre;
-        var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo, genre);
-        accounts.push(accountObj);
+    if (typeof jsonObj == 'undefined' || jsonObj == null) {
+        alert(defaultError);
+    } else {
+        var jsonArr = jsonObj.profiles;
+        for (i in jsonArr) {
+            var profile = jsonArr[i];
+            var username = profile.username;
+            var maybeGymCount = profile.account.gymCount;
+            var maybeSleepyCount = profile.account.sleepyCount;
+            var gymCount = 0;
+            var sleepCount = 0;
+            if(maybeGymCount != null && maybeGymCount != "undefined") gymCount = parseInt(maybeGymCount);
+            if(maybeSleepyCount != null && maybeSleepyCount != "undefined") sleepCount = parseInt(maybeSleepyCount);
+            var picture = profile.account.accountPicture;
+            var summary = profile.summary;
+            var selectedVideo = profile.selectedVideoUrl.videoLink;
+            var genre = profile.account.genre;
+            var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo, genre);
+            accounts.push(accountObj);
+        }
+        return accounts;
     }
-    return accounts;
 }
 
 function renderAccountList(accounts, slider) {
@@ -426,7 +431,7 @@ $(document).ready(function(){
         },
         error: function (jqXHR, status, err) {
             loader.hide();
-            alert("Oppsss! Looks like we are overwhelmed. Please try again.. (Apologies)");
+            alert(defaultError);
         },
         complete: function (jqXHR, status) {
             loader.hide();
