@@ -12,7 +12,7 @@ var retryCount = 2;
 var serverBaseUrl = "https://bemorningninja.herokuapp.com/";
 var quoteBaseUrl = "https://quotes.rest/qod?category=inspire";
 var defaultMotivationAudio = "https://d3ctxlq1ktw2nl.cloudfront.net/production/2019-7-13/20842925-44100-2-225949da7b5c3.mp3";
-var defaultError = "Oppsss! Looks like we are overwhelmed. Please try again.. (Apologies)";
+var defaultError = "<center>Oppsss!<br>Looks like we are overwhelmed.<br>Please try again. (Apologies) 😓</center>";
 
 // Helpers
 var currentUsername = "";
@@ -348,6 +348,7 @@ function HttpRes(status, responseText) {
 function pushAccountData(result, fromAPI) {
     var accounts = [];
     var jsonObj = JSON.parse(JSON.stringify(result));
+    var loaderText = $('.loaderText');
     if(!fromAPI) {
         jsonObj = JSON.parse(result);
     }
@@ -421,6 +422,7 @@ $(document).ready(function(){
 
     var slider = $('.carousel.carousel-slider');
     var loader = $('.loaderDiv');
+    var loaderText = $('.loaderText');
     var accounts = [];
     var url = serverBaseUrl + "profiles";
     $.ajax({
@@ -428,14 +430,10 @@ $(document).ready(function(){
         type: 'GET',
         success: function(result, status, xhr) {
             accounts = pushAccountData(result, true);
+            renderAccountList(accounts, slider);
         },
         error: function (jqXHR, status, err) {
-            loader.hide();
-            alert(defaultError);
-        },
-        complete: function (jqXHR, status) {
-            loader.hide();
-            renderAccountList(accounts, slider);
+            loaderText.html(defaultError);
         }
     });
 });
