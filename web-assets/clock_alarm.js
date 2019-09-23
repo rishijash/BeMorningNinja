@@ -11,6 +11,7 @@ Notes:
 var retryCount = 2;
 var serverBaseUrl = "https://bemorningninja.herokuapp.com/";
 var quoteBaseUrl = "https://quotes.rest/qod?category=inspire";
+var defaultMotivationAudio = "https://d3ctxlq1ktw2nl.cloudfront.net/production/2019-7-13/20842925-44100-2-225949da7b5c3.mp3";
 
 // Helpers
 var currentUsername = "";
@@ -268,7 +269,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function quoteAction(alarmPlayerBody, happyMorning) {
     var alarmPlayerTitle = document.getElementById("alarmPlayerTitle");
-    $("#alarmPlayerFooter").hide();
+    var alarmPlayerFooter = document.getElementById("alarmPlayerFooter");
     if(!happyMorning) {
         $.ajax({
             url: quoteBaseUrl,
@@ -280,12 +281,13 @@ function quoteAction(alarmPlayerBody, happyMorning) {
                 var contentsObj = jsonObj.contents;
                 var quotes = contentsObj.quotes;
                 if(quotes.length > 0) {
-                    alarmPlayerTitle.innerText = "Not enough inspired.. Let's change that! 😉";
+                    alarmPlayerTitle.innerText = "Sorry, we don't believe in Snooze button! 😉";
                     var quote = quotes[0].quote;
-                    alarmPlayerBody.innerHTML = "<br><h5><i>\"" + quote + "\"</i></h5><br><br>Quotes by: <a hre='http://quotes.rest'>Quotes.rest</a>";
-                    setTimeout(function() {
-                        $("#alarmPlayer").modal('close');
-                    }, 7000);
+                    alarmPlayerBody.innerHTML = "<br><center><audio id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + defaultMotivationAudio + "\">\n" +
+                        "                                Your browser does not support the video tag.\n" +
+                        "                            </audio></center><br>" +
+                    "<br><h5><i>\"" + quote + "\"</i></h5><br>Quotes by: <a href='http://quotes.rest'>Quotes.rest</a> and audio by <a href='https://player.fm'>Player.fm</a>";
+                    alarmPlayerFooter.innerHTML = "<div class=\"row\"> <div class=\"col s12 m12\"> <center> <a class=\"waves-effect waves-light btn\" id=\"strongMorningAfterSleepy\" onclick='defaultGreetings()'><span>💪</span> I am pumped up!!!</a> </center> </div> </div><br>";
                 } else {
                     defaultGreetings();
                 }
@@ -301,6 +303,8 @@ function quoteAction(alarmPlayerBody, happyMorning) {
 }
 
 function defaultGreetings() {
+    $("#alarmPlayerFooter").hide();
+    var alarmPlayerBody = document.getElementById("alarmPlayerBody");
     alarmPlayerBody.innerHTML = "<br><center><h5>Have a fantastic day!!!</h5></center>";
     setTimeout(function() {
         $("#alarmPlayer").modal('close');
@@ -413,7 +417,6 @@ $(document).ready(function(){
     var slider = $('.carousel.carousel-slider');
     var loader = $('.loaderDiv');
     var accounts = [];
-    var testData = "{ \"profiles\": [ { \"username\": \"garyvee\", \"account\": { \"dataId\": \"FRwJjR9dMyGIHUT8dUUq\", \"username\": \"garyvee\", \"accountPicture\": \"https://upload.wikimedia.org/wikipedia/commons/c/cd/Gary_Vaynerchuk_public_domain.jpg\", \"accountSummary\": \"\", \"thumbsupCount\": 0, \"sleepyCount\": 1, \"gymCount\": 11 }, \"profileUrl\": \"https://www.instagram.com/garyvee\", \"summary\": \"🔮 Investor Facebook, Snap, Venmo & Uber\\n✈️ CEO of @vaynermedia & @vaynersports \\n💻 Check @one37pm a hot new site\\n👇🏼Subscribe to my 🔥 podcast 🎧\", \"profilePic\": \"https://scontent-iad3-1.cdninstagram.com/vp/9bcda296b036828fe20aa349e28a85c6/5E23E12B/t51.2885-19/s150x150/49409756_359167334882615_1833195288651628544_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com\", \"selectedVideoUrl\": { \"displayUrl\": \"https://scontent-iad3-1.cdninstagram.com/vp/86d365be266ba3d477d12fc3bc493858/5D89087E/t51.2885-15/fr/e15/p1080x1080/69293201_180362269792297_8075937881308947572_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=1\", \"instagramPostUrl\": \"https://www.instagram.com/p/B2sFB9KABcw/\", \"videoLink\": \"https://scontent.cdninstagram.com/v/t50.16885-16/10000000_1139611109761293_289744403519233370_n.mp4?_nc_ht=scontent.cdninstagram.com&_nc_cat=109&oe=5D8A01EC&oh=0ea09426c25d0f9365767057b46df8c4\" }, \"selectedImageUrl\": { \"displayUrl\": \"https://scontent-iad3-1.cdninstagram.com/vp/bd25405fa284bffe3e2f75753b9d2c80/5E3C5CB5/t51.2885-15/e35/71528099_733403820495191_4309738476731828091_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=1\", \"instagramPostUrl\": \"https://www.instagram.com/p/B2ru9ZWAObP/\" } }, { \"username\": \"cernyfit\", \"account\": { \"dataId\": \"0tMT6sb65ppPHIg5yGYY\", \"username\": \"cernyfit\", \"accountPicture\": \"https://scontent-lax3-1.cdninstagram.com/vp/1c609250501c551083678799172c7e70/5E3D5502/t51.2885-19/s150x150/69039356_650775845410148_7096071385071484928_n.jpg?_nc_ht=scontent-lax3-1.cdninstagram.com\", \"accountSummary\": \"\" }, \"profileUrl\": \"https://www.instagram.com/cernyfit\", \"summary\": \"Main account: @AmandaCerny. \\nWelcome to my fitness account!\\nYour daily dose of wellness🍃💪🏼\", \"profilePic\": \"https://scontent-iad3-1.cdninstagram.com/vp/bd4e3d8a37e02dff8e3120ae74d4f335/5E3D5502/t51.2885-19/s150x150/69039356_650775845410148_7096071385071484928_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com\", \"selectedVideoUrl\": { \"displayUrl\": \"https://scontent-iad3-1.cdninstagram.com/vp/a915298f62a73be04e21b1dbf044cfbb/5D89313A/t51.2885-15/e35/69279473_505063943616572_7653102409577006742_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=108\", \"instagramPostUrl\": \"https://www.instagram.com/p/B11jgytDwIT/\", \"videoLink\": \"https://scontent.cdninstagram.com/v/t50.16885-16/70043418_439691413303345_1446127276244990573_n.mp4?_nc_ht=scontent.cdninstagram.com&_nc_cat=101&oe=5D88E234&oh=a0425a5e2168989f30500295f9889f3b\" }, \"selectedImageUrl\": { \"displayUrl\": \"https://scontent-iad3-1.cdninstagram.com/vp/0091b07f32514be16eb957e80257aab1/5E39E0E7/t51.2885-15/e35/p1080x1080/69790204_2353868377995647_5558603780867183345_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=111\", \"instagramPostUrl\": \"https://www.instagram.com/p/B2Zbs4Vjpqc/\" } }, { \"username\": \"thebodycoach\", \"account\": { \"dataId\": \"px8UedS383hU1dVls4QB\", \"username\": \"thebodycoach\", \"accountPicture\": \"https://i.guim.co.uk/img/media/a11bfd2db9429f52e52e24639af1d447fb94da36/559_368_3898_4872/master/3898.jpg?width=300&quality=85&auto=format&fit=max&s=56ecb2b0dbe15bd01214fa9632b1b55e\", \"accountSummary\": \"\", \"thumbsupCount\": 0, \"sleepyCount\": 1, \"gymCount\": 1 }, \"profileUrl\": \"https://www.instagram.com/thebodycoach\", \"summary\": \"On a mission to inspire one new person everyday to exercise and cook a healthy meal 😊\", \"profilePic\": \"https://scontent-iad3-1.cdninstagram.com/vp/3ebdadec43ff20003c68dd962e232e89/5E3787DD/t51.2885-19/s150x150/42669825_2216497948631670_5697409766096109568_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com\", \"selectedVideoUrl\": { \"displayUrl\": \"https://scontent-iad3-1.cdninstagram.com/vp/0c09cdca878489d3d7d13794be98467c/5D8922C0/t51.2885-15/e35/70414116_682034702304144_7521045283030899041_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=100\", \"instagramPostUrl\": \"https://www.instagram.com/p/B2e88IvHPNd/\", \"videoLink\": \"https://scontent.cdninstagram.com/v/t50.2886-16/71302561_2359896127661091_3182429968931246536_n.mp4?_nc_ht=scontent.cdninstagram.com&_nc_cat=103&oe=5D895DD4&oh=e3de29d0778ed719452a9ed8890e383f\" }, \"selectedImageUrl\": { \"displayUrl\": \"https://scontent-iad3-1.cdninstagram.com/vp/dbbd348bc5edaa457ee62b6df22758a7/5E22687B/t51.2885-15/e35/69875611_749864195452647_8773034366963558104_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=1\", \"instagramPostUrl\": \"https://www.instagram.com/p/B2sFpvRnknw/\" } }, { \"username\": \"nofrontspodcast\", \"account\": { \"dataId\": \"ndhjHbbVSohZasORuldC\", \"username\": \"nofrontspodcast\", \"accountPicture\": \"https://scontent-lax3-1.cdninstagram.com/vp/a9c284dadeac05c5bdb44f59bcce2c3e/5DFABB06/t51.2885-19/s320x320/57939603_491601198044044_5725603537744822272_n.jpg?_nc_ht=scontent-lax3-1.cdninstagram.com\", \"accountSummary\": \"\", \"thumbsupCount\": 0, \"sleepyCount\": 3, \"gymCount\": 1 }, \"profileUrl\": \"https://www.instagram.com/nofrontspodcast\", \"summary\": \"🚗| One Year Ago I Lived In My Car\\n🎙| # 5 Business Podcast on ITunes \\n🧔🏻| Founder of @socialauthentic \\n 👇🏼NEWEST Episode No Fronts Sept 12👇🏼\", \"profilePic\": \"https://scontent-iad3-1.cdninstagram.com/vp/8e2c46c6012532f5dd06db5e3d72d7b4/5E1EFBF6/t51.2885-19/s150x150/57939603_491601198044044_5725603537744822272_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com\", \"selectedVideoUrl\": { \"displayUrl\": \"https://scontent-iad3-1.cdninstagram.com/vp/5869ff211871804d5e9d057964f0921f/5D89721F/t51.2885-15/e35/69599881_155839938809859_5827654462882447979_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=103\", \"instagramPostUrl\": \"https://www.instagram.com/p/B2r69JPAvwA/\", \"videoLink\": \"https://scontent.cdninstagram.com/v/t50.2886-16/71296275_405014630196131_3154421708694143313_n.mp4?_nc_ht=scontent.cdninstagram.com&_nc_cat=111&oe=5D88CE95&oh=dd6f5fb2411f83e27ca9dea938ab46df\" }, \"selectedImageUrl\": { \"displayUrl\": \"https://scontent-iad3-1.cdninstagram.com/vp/b54adb310adc2c029e30165250832a19/5E053DDE/t51.2885-15/e35/69650304_1368307623335782_8374753560229332755_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=110\", \"instagramPostUrl\": \"https://www.instagram.com/p/B2qFJABguIG/\" } } ] }";
     var url = serverBaseUrl + "profiles";
     $.ajax({
         url: url,
@@ -422,8 +425,8 @@ $(document).ready(function(){
             accounts = pushAccountData(result, true);
         },
         error: function (jqXHR, status, err) {
-            accounts = pushAccountData(testData, false);
-            alert("Something went wrong.. Please referesh the page!");
+            loader.hide();
+            alert("Oppsss! Looks like we are overwhelmed. Please try again.. (Apologies)");
         },
         complete: function (jqXHR, status) {
             loader.hide();
