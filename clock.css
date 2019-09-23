@@ -44,7 +44,12 @@ body{
     background-color: #74b9ff;
     border : 10px solid #74b9ff;
     border-radius : 1px;
-    margin-top: 10px;
+    height: 100%;
+    margin: auto;
+}
+
+#intro {
+    margin-top: -10px;
 }
 
 h1{
@@ -67,7 +72,13 @@ h3{
 .box{
     background-color: #ffffff;
     border-radius:5px;
+    margin-top: -15px;
 }
+
+#alarmInput {
+    margin-top: -15px;
+}
+
 #settings{
     background-color: #dbe4e6;
     height: 100%;
@@ -128,8 +139,12 @@ h3{
 
 }
 
+#carouselRow {
+    margin-top: -20px;
+}
+
 #bottomRow {
-    margin-top: -30px;
+    margin-top: -40px;
 }
 
 /* Loader */

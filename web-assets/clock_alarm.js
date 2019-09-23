@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alarmObj = newAlarm;
 
             // Update alarm message text
-            alarmMessage.innerHTML = "All set! @" + currentUsername + " will wake you up!";
+            alarmMessage.innerHTML = "<b>All set! @" + currentUsername + " will wake you up! 🤘</b>";
 
             submit.innerText = "CANCEL";
 
@@ -372,7 +372,7 @@ function renderAccountList(accounts, slider) {
             "                            <div style=\"position: relative;\">\n" +
             "                                <img src=\"" + account.picture + "\" height=\"100%\" width=\"100%\">\n" +
             "                                <div class=\"img-card\" style=\" \">\n" +
-            "                                    <h6><a target='_blank' style='color: white; text-decoration: underline; font-size: 18px;' href='https://instagram.com/" + account.username + "'>@" + account.username + "</a><span>&nbsp&nbsp 💪" + account.gym + " 😴" + account.sleepy + "</span></h6>\n" +
+            "                                    <h6><a target='_blank' style='color: white; text-decoration: underline; font-size: 18px;' href='https://instagram.com/" + account.username + "'>@" + account.username + "</a><span>&nbsp&nbsp 💪&nbsp <b>" + account.gym + "</b>&nbsp 😴 &nbsp<b>" + account.sleepy + "</b></span></h6>\n" +
             "                                    <h6 style='margin-top: 15px;'>Type: " + account.genre + "</h6>\n" +
             "                                    <span class='summaryText'>" + account.summary + "</span>\n" +
             "                                </div>\n" +
@@ -387,7 +387,7 @@ function renderAccountList(accounts, slider) {
             var cindex = $(data).data('cindex');
             currentUsername = accounts[cindex].username;
             var alarmMessage = document.getElementById('alarm_message');
-            alarmMessage.innerHTML = "Influencer Selected: @" + currentUsername;
+            alarmMessage.innerHTML = "<b>Influencer Selected: @" + currentUsername + "</b>";
             fallbackVideoUrl = accounts[cindex].selectedVideo;
         }
     });
