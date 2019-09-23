@@ -430,6 +430,7 @@ $(document).ready(function(){
         type: 'GET',
         success: function(result, status, xhr) {
             accounts = pushAccountData(result, true);
+            loader.hide();
             renderAccountList(accounts, slider);
         },
         error: function (jqXHR, status, err) {
