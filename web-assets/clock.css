@@ -35,6 +35,7 @@ html{
 
 body{
     font-family: Arial, Helvetica, sans-serif;
+    background-color: #dbe4e6;
 }
 .container{
     background-color: #dbe4e6;
@@ -83,6 +84,7 @@ h3{
     margin: auto;
     text-align: center;
     overflow: auto;
+    height: 100%;
 }
 .clock_name{
     font-weight:700;
