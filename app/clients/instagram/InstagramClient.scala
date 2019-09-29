@@ -64,20 +64,23 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
     }
   }
 
-  def getVideLinkWebSync(postUrl: String): Option[String] = {
+  def getVideoLinkWebSync(postUrl: String): Option[String] = {
+    val future = getVideoLinkWeb(postUrl)
+    Await.result(future, 15.seconds)
+  }
+
+  def getVideoLinkWeb(postUrl: String): Future[Option[String]] = {
     try {
-      val htmlFuture = HtmlUtil.getHtmlFromUrl(postUrl)
-      val htmlRes = Await.result(htmlFuture, 15.seconds)
-      htmlRes.map(html => {
+      HtmlUtil.getHtmlFromUrl(postUrl).map(_.map(html => {
         val startKeyIndex = html.indexOf("https://scontent.cdninstagram.com/v")
         val subStringHtml = html.substring(startKeyIndex, html.length)
         val endKeyIndex = subStringHtml.indexOf("\"")
         val url = subStringHtml.substring(0, endKeyIndex).replaceAll("\\\\u0026", "&")
         url
-      })
+      }))
     } catch {
       case NonFatal(e) => {
-        None
+        Future.successful(None)
       }
     }
   }

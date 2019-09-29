@@ -175,7 +175,7 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
       SelectedMedia(
         displayUrl = selected.node.display_url,
         instagramPostUrl = postUrl,
-        videoLink = if (includeVideoLink) instagramClient.getVideLinkWebSync(postUrl) else None
+        videoLink = if (includeVideoLink) instagramClient.getVideoLinkWebSync(postUrl) else None
       )
     })
   }
