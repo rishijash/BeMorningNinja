@@ -235,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Show Image and Play Audio
                 alarmPlayerBody.innerHTML = "<center><audio id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
                     "                                Your browser does not support the video tag.\n" +
-                    "                            </audio><img src=\"" + imageUrl + "\" width=\"320\" height=\"240\" ></center>";
+                    "                            </audio><br><img src=\"" + imageUrl + "\" width=\"320\" height=\"240\" ></center>";
 
             } else {
                 // Play Video
