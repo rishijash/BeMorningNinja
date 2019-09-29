@@ -327,11 +327,13 @@ function defaultGreetings() {
     var randomBreakfast = breakfasts[Math.floor(Math.random()*breakfasts.length)];
     var alarmPlayerBody = document.getElementById("alarmPlayerBody");
     alarmPlayerBody.innerHTML = "<br><center><h5>Have a fantastic day!!!</h5></center><br><br><br>" +
-        "<h5>Our suggestion: Start your day with a healthy meal:" +
-        "<a href='" + randomBreakfast.post + "' target='_blank'>Video from @" + randomBreakfast.username + "</a></h5>";
+        "<h6>Our suggestion: Start your day with a healthy meal:" +
+        "<a href='" + randomBreakfast.post + "' target='_blank'>" +
+        "<img src=\"" + randomBreakfast.postImage + "\" height=\"240\">" +
+        "</a></h6>";
     setTimeout(function() {
         $("#alarmPlayer").modal('close');
-    }, 7000);
+    }, 10000);
 }
 
 // Account Constructor
@@ -347,9 +349,10 @@ function Account(username, gym, sleepy, picture, summary, selectedVideo, genre, 
 }
 
 // Breakfast Constructor
-function Breakfast(username, post) {
+function Breakfast(username, post, postImage) {
     this.username = username;
     this.post = post;
+    this.postImage = postImage;
 }
 
 function httpGet(theUrl) {
@@ -402,7 +405,8 @@ function pushAccountData(result, fromAPI) {
             if(genre == 'Breakfast') {
                 // Add Breakfast Constructor
                 var selectedPost = profile.selectedVideoUrl.instagramPostUrl;
-                var breakfastObj = new Breakfast(username, selectedPost);
+                var postImage = profile.selectedVideoUrl.displayUrl;
+                var breakfastObj = new Breakfast(username, selectedPost, postImage);
                 breakfasts.push(breakfastObj);
             } else {
                 // Add Account
