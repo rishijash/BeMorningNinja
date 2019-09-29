@@ -235,9 +235,9 @@ document.addEventListener("DOMContentLoaded", function () {
             var alarmPlayerBody = document.getElementById("alarmPlayerBody");
             if(imageUrl != null && imageUrl.length > 0) {
                 // Show Image and Play Audio
-                alarmPlayerBody.innerHTML = "<center><audio id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
+                alarmPlayerBody.innerHTML = "<center><audio id=\"alarmVideo\" controls autoplay loop src=\"" + url + "\">\n" +
                     "                                Your browser does not support the video tag.\n" +
-                    "                            </audio><br><img src=\"" + imageUrl + "\" width=\"320\" ></center>";
+                    "                            </audio><br><img src=\"" + imageUrl + "\" height=\"240\" ></center>";
 
             } else {
                 // Play Video
@@ -326,12 +326,12 @@ function defaultGreetings() {
     $("#alarmPlayerFooter").hide();
     var randomBreakfast = breakfasts[Math.floor(Math.random()*breakfasts.length)];
     var alarmPlayerBody = document.getElementById("alarmPlayerBody");
-    alarmPlayerBody.innerHTML = "<br><center><h5>Have a fantastic day!!!</h5></center><br><br>" +
-        "<h5>Our suggestion: Start your day with a healthy meal: </h5>" +
-        "<a href='" + randomBreakfast.post + "' target='_blank'>Video from @" + randomBreakfast.username + "</a>";
+    alarmPlayerBody.innerHTML = "<br><center><h5>Have a fantastic day!!!</h5></center><br><br><br>" +
+        "<h5>Our suggestion: Start your day with a healthy meal:" +
+        "<a href='" + randomBreakfast.post + "' target='_blank'>Video from @" + randomBreakfast.username + "</a></h5>";
     setTimeout(function() {
         $("#alarmPlayer").modal('close');
-    }, 1500);
+    }, 7000);
 }
 
 // Account Constructor
