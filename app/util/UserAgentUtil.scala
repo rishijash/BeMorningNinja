@@ -1,15 +1,43 @@
 package util
 
+import java.io.File
+import java.util.Scanner
+
+import scala.util.control.NonFatal
+
 object UserAgentUtil {
 
-  val userAgents = List(
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36",
-    "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.91 Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
-  )
+  val androidAgents = new File("conf/userAgents/Android+Webkit+Browser.txt")
+  val chromeAgents = new File("conf/userAgents/Chrome.txt")
+  val edgeAgents = new File("conf/userAgents/Edge.txt")
+  val firefoxAgents = new File("conf/userAgents/Firefox.txt")
+  val internetExplorerAgents = new File("conf/userAgents/Internet+Explorer.txt")
+  val operaAgents = new File("conf/userAgents/Opera.txt")
+  val safariAgents = new File("conf/userAgents/Safari.txt")
+
+  val userAgents = {
+    fileToList(androidAgents) ++
+    fileToList(chromeAgents) ++
+    fileToList(edgeAgents) ++
+    fileToList(firefoxAgents) ++
+    fileToList(internetExplorerAgents) ++
+    fileToList(operaAgents) ++
+    fileToList(safariAgents)
+  }
+
+  private def fileToList(file: File): List[String] = {
+    try {
+      val sc = new Scanner(file)
+      val res = scala.collection.mutable.ListBuffer.empty[String]
+      while (sc.hasNextLine())
+        res += sc.nextLine()
+      res.toList.filter(_.nonEmpty)
+    } catch {
+      case NonFatal(e) => {
+        val t = e
+        List.empty
+      }
+    }
+  }
 
 }

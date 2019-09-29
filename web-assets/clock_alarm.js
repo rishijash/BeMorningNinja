@@ -17,6 +17,7 @@ var defaultError = "<center>Oppsss!<br>Looks like we are overwhelmed.<br>Please 
 // Helpers
 var currentUsername = "";
 var fallbackVideoUrl = "";
+var fallbackImageUrl = "";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -44,11 +45,12 @@ document.addEventListener("DOMContentLoaded", function () {
     addListenerForInput();
 
     // Alarm constructor
-    function Alarm(hourArg, minArg, nameArg, fallbackVideoArg) {
+    function Alarm(hourArg, minArg, nameArg, fallbackVideoArg, fallbackImageArg) {
         this.hourArg = hourArg;
         this.minArg = minArg;
         this.name = nameArg;
         this.fallbackVideo = fallbackVideoArg;
+        this.fallbackImage = fallbackImageArg;
 
         this.getHour = function () {
             return this.hourArg;
@@ -64,7 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         this.getFallbackVideo = function() {
             return this.fallbackVideo;
+        };
+
+        this.getFallbackImage = function() {
+            return this.fallbackImage;
         }
+
     }
 
     // Functions
@@ -192,7 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
             minute = parseInt(alarmMinutes.value);
 
             // Create new alarm object
-            var newAlarm = new Alarm(hour, minute, currentUsername, fallbackVideoUrl);
+            var newAlarm = new Alarm(hour, minute, currentUsername, fallbackVideoUrl, fallbackImageUrl);
             alarmObj = newAlarm;
 
             // Update alarm message text
@@ -313,7 +320,7 @@ function defaultGreetings() {
 }
 
 // Account Constructor
-function Account(username, gym, sleepy, picture, summary, selectedVideo, genre) {
+function Account(username, gym, sleepy, picture, summary, selectedVideo, genre, selectedImage) {
     this.username = username;
     this.gym = gym;
     this.sleepy = sleepy;
@@ -321,6 +328,7 @@ function Account(username, gym, sleepy, picture, summary, selectedVideo, genre) 
     this.summary = summary;
     this.selectedVideo = selectedVideo;
     this.genre = genre;
+    this.selectedImage = selectedImage;
 }
 
 function httpGet(theUrl) {
@@ -368,8 +376,9 @@ function pushAccountData(result, fromAPI) {
             var picture = profile.account.accountPicture;
             var summary = profile.summary;
             var selectedVideo = profile.selectedVideoUrl.videoLink;
+            var selectedImage = profile.selectedImageUrl.displayUrl;
             var genre = profile.account.genre;
-            var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo, genre);
+            var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo, genre, selectedImage);
             accounts.push(accountObj);
         }
         return accounts;
@@ -401,6 +410,7 @@ function renderAccountList(accounts, slider) {
             var alarmMessage = document.getElementById('alarm_message');
             alarmMessage.innerHTML = "<b>Influencer Selected: @" + currentUsername + "</b>";
             fallbackVideoUrl = accounts[cindex].selectedVideo;
+            fallbackImageUrl = accounts[cindex].selectedImage;
         }
     });
 }

@@ -5,6 +5,7 @@ import scalaj.http.{Http, HttpOptions}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Random
 
 object HtmlUtil {
 
@@ -18,8 +19,10 @@ object HtmlUtil {
 
   private def sendRequest(url: String): Future[Option[String]] = {
     Future {
+      val userAgent = Random.shuffle(UserAgentUtil.userAgents).head
       val result = Http(url)
-        .option(HttpOptions.readTimeout(2000)).asString
+        .header("User-Agent", userAgent)
+        .option(HttpOptions.readTimeout(4000)).asString
       if (result.is2xx) {
         Some(result.body)
       } else {

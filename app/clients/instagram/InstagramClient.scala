@@ -13,6 +13,7 @@ import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Random
+import scala.util.control.NonFatal
 
 class InstagramClient @Inject() (implicit ws: WSClient) {
 
@@ -64,15 +65,21 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
   }
 
   def getVideLinkWebSync(postUrl: String): Option[String] = {
-    val htmlFuture = HtmlUtil.getHtmlFromUrl(postUrl)
-    val htmlRes = Await.result(htmlFuture, 2.seconds)
-    htmlRes.map(html => {
-      val startKeyIndex = html.indexOf("https://scontent.cdninstagram.com/v")
-      val subStringHtml = html.substring(startKeyIndex, html.length)
-      val endKeyIndex = subStringHtml.indexOf("\"")
-      val url = subStringHtml.substring(0, endKeyIndex).replaceAll("\\\\u0026", "&")
-      url
-    })
+    try {
+      val htmlFuture = HtmlUtil.getHtmlFromUrl(postUrl)
+      val htmlRes = Await.result(htmlFuture, 4.seconds)
+      htmlRes.map(html => {
+        val startKeyIndex = html.indexOf("https://scontent.cdninstagram.com/v")
+        val subStringHtml = html.substring(startKeyIndex, html.length)
+        val endKeyIndex = subStringHtml.indexOf("\"")
+        val url = subStringHtml.substring(0, endKeyIndex).replaceAll("\\\\u0026", "&")
+        url
+      })
+    } catch {
+      case NonFatal(e) => {
+        None
+      }
+    }
   }
 
   private def sendRequest(url: String): Future[Either[models.Error, Response]] = {
