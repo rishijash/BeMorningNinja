@@ -17,6 +17,7 @@ var defaultError = "<center>Oppsss!<br>Looks like we are overwhelmed.<br>Please 
 // Helpers
 var currentUsername = "";
 var fallbackVideoUrl = "";
+var fallbackVideoUrlPost = "";
 var fallbackImageUrl = "";
 
 var breakfasts = [];
@@ -47,12 +48,13 @@ document.addEventListener("DOMContentLoaded", function () {
     addListenerForInput();
 
     // Alarm constructor
-    function Alarm(hourArg, minArg, nameArg, fallbackVideoArg, fallbackImageArg) {
+    function Alarm(hourArg, minArg, nameArg, fallbackVideoArg, fallbackImageArg, fallbackVideoUrlPostArg) {
         this.hourArg = hourArg;
         this.minArg = minArg;
         this.name = nameArg;
         this.fallbackVideo = fallbackVideoArg;
         this.fallbackImage = fallbackImageArg;
+        this.fallbackVideoUrlPost = fallbackVideoUrlPostArg;
 
         this.getHour = function () {
             return this.hourArg;
@@ -72,6 +74,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         this.getFallbackImage = function() {
             return this.fallbackImage;
+        };
+
+        this.getFallbackVideoUrlPost = function() {
+            return this.fallbackVideoUrlPost;
         }
 
     }
@@ -201,7 +207,7 @@ document.addEventListener("DOMContentLoaded", function () {
             minute = parseInt(alarmMinutes.value);
 
             // Create new alarm object
-            var newAlarm = new Alarm(hour, minute, currentUsername, fallbackVideoUrl, fallbackImageUrl);
+            var newAlarm = new Alarm(hour, minute, currentUsername, fallbackVideoUrl, fallbackImageUrl, fallbackVideoUrlPost);
             alarmObj = newAlarm;
 
             // Update alarm message text
@@ -230,20 +236,21 @@ document.addEventListener("DOMContentLoaded", function () {
             // get Video Link
             currentUsername = alarmData.getName();
             var url = alarmData.getFallbackVideo();
+            var postUrl = alarmData.getFallbackVideoUrlPost();
             var imageUrl = alarmData.getFallbackImage();
             // Play it
             var alarmPlayerBody = document.getElementById("alarmPlayerBody");
             if(imageUrl != null && imageUrl.length > 0) {
                 // Show Image and Play Audio
-                alarmPlayerBody.innerHTML = "<center><audio id=\"alarmVideo\" controls autoplay loop src=\"" + url + "\">\n" +
+                alarmPlayerBody.innerHTML = "<center><a href=\"" + postUrl + "\" target='_blank'><audio id=\"alarmVideo\" controls autoplay loop src=\"" + url + "\">\n" +
                     "                                Your browser does not support the video tag.\n" +
-                    "                            </audio><br><img src=\"" + imageUrl + "\" height=\"240\" ></center>";
+                    "                            </audio><br><img src=\"" + imageUrl + "\" height=\"240\" ></a></center>";
 
             } else {
                 // Play Video
-                alarmPlayerBody.innerHTML = "<center><video id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
+                alarmPlayerBody.innerHTML = "<center><a href=\"" + postUrl + "\" target='_blank'><video id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
                     "                                Your browser does not support the video tag.\n" +
-                    "                            </video></center>";
+                    "                            </video></a></center>";
             }
             $("#alarmPlayer").modal('open');
             triggered = true;
@@ -339,7 +346,7 @@ function defaultGreetings() {
 }
 
 // Account Constructor
-function Account(username, gym, sleepy, picture, summary, selectedVideo, genre, selectedImage) {
+function Account(username, gym, sleepy, picture, summary, selectedVideo, genre, selectedImage, selectedVideoUrlPost) {
     this.username = username;
     this.gym = gym;
     this.sleepy = sleepy;
@@ -348,6 +355,7 @@ function Account(username, gym, sleepy, picture, summary, selectedVideo, genre, 
     this.selectedVideo = selectedVideo;
     this.genre = genre;
     this.selectedImage = selectedImage;
+    this.selectedVideoUrlPost = selectedVideoUrlPost;
 }
 
 // Breakfast Constructor
@@ -404,6 +412,7 @@ function pushAccountData(result, fromAPI) {
             var selectedVideo = profile.selectedVideoUrl.videoLink;
             var selectedImage = profile.selectedImageUrl.displayUrl;
             var genre = profile.account.genre;
+            var selectedVideoUrlPost = profile.selectedVideoUrl.instagramPostUrl;
             if(genre == 'Breakfast') {
                 // Add Breakfast Constructor
                 var selectedPost = profile.selectedVideoUrl.instagramPostUrl;
@@ -412,7 +421,7 @@ function pushAccountData(result, fromAPI) {
                 breakfasts.push(breakfastObj);
             } else {
                 // Add Account
-                var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo, genre, selectedImage);
+                var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo, genre, selectedImage, selectedVideoUrlPost);
                 accounts.push(accountObj);
             }
         }
@@ -446,6 +455,7 @@ function renderAccountList(accounts, slider) {
             alarmMessage.innerHTML = "<b>Influencer Selected: @" + currentUsername + "</b>";
             fallbackVideoUrl = accounts[cindex].selectedVideo;
             fallbackImageUrl = accounts[cindex].selectedImage;
+            fallbackVideoUrlPost = account[cindex].selectedVideoUrlPost;
         }
     });
 }
