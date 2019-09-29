@@ -19,8 +19,6 @@ var currentUsername = "";
 var fallbackVideoUrl = "";
 var fallbackImageUrl = "";
 
-var breakfastVideoUsername = "";
-var breakfastVideoPost = "";
 var breakfasts = [];
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -405,7 +403,7 @@ function pushAccountData(result, fromAPI) {
                 // Add Breakfast Constructor
                 var selectedPost = profile.selectedVideoUrl.instagramPostUrl;
                 var breakfastObj = new Breakfast(username, selectedPost);
-                breakfasts.add(breakfastObj);
+                breakfasts.push(breakfastObj);
             } else {
                 // Add Account
                 var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo, genre, selectedImage);
