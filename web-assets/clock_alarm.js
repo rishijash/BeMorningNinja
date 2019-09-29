@@ -332,7 +332,7 @@ function defaultGreetings() {
     //     "<img src=\"" + randomBreakfast.postImage + "\" height=\"240\">" +
     //     "</a>" +
     //     "</center>";
-    alarmPlayerBody.innerHTML = "<br><center><h5>Have a fantastic day!!!</center><br><br>";
+    alarmPlayerBody.innerHTML = "<br><br><center><h5>Have a fantastic day!!!</center><br><br>";
     setTimeout(function() {
         $("#alarmPlayer").modal('close');
     }, 1500);
