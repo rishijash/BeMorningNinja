@@ -326,8 +326,8 @@ function defaultGreetings() {
     $("#alarmPlayerFooter").hide();
     var randomBreakfast = breakfasts[Math.floor(Math.random()*breakfasts.length)];
     var alarmPlayerBody = document.getElementById("alarmPlayerBody");
-    alarmPlayerBody.innerHTML = "<br><center><h5>Have a fantastic day!!!</h5><br><br>" +
-        "Our suggestion: Start your day with a healthy meal: <br>" +
+    alarmPlayerBody.innerHTML = "<br><center><h5>Have a fantastic day!!!<br><br>" +
+        "<i>Our suggestion: Start your day with a healthy meal:</i></h5><br>" +
         "<a href='" + randomBreakfast.post + "' target='_blank'>" +
         "<img src=\"" + randomBreakfast.postImage + "\" height=\"240\">" +
         "</a>" +
