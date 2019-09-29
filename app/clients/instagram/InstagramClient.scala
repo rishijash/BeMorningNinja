@@ -67,7 +67,7 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
   def getVideLinkWebSync(postUrl: String): Option[String] = {
     try {
       val htmlFuture = HtmlUtil.getHtmlFromUrl(postUrl)
-      val htmlRes = Await.result(htmlFuture, 8.seconds)
+      val htmlRes = Await.result(htmlFuture, 15.seconds)
       htmlRes.map(html => {
         val startKeyIndex = html.indexOf("https://scontent.cdninstagram.com/v")
         val subStringHtml = html.substring(startKeyIndex, html.length)
