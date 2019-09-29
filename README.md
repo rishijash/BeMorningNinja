@@ -1,33 +1,15 @@
-# scala/play-getting-started
+# BeMoningNinja
 
-A barebones Scala app (using the Play framework), which can easily be deployed to Heroku.  
+BeMorninngNinja lets you wake up and/or motivate with your fav instagram influencer.
 
-This application support the [Getting Started with Scala/Play on Heroku](https://devcenter.heroku.com/articles/getting-started-with-scala) article - check it out.
+#### Stack:
 
-## Running Locally
+Backend: 
+1. Play Scala Application (`/app`)
 
-Make sure you have Play and sbt installed.  Also, install the [Heroku Toolbelt](https://toolbelt.heroku.com/).
-
-```sh
-$ git clone https://github.com/heroku/scala-getting-started.git
-$ cd scala-getting-started
-$ sbt compile stage
-$ heroku local
-```
-
-Your app should now be running on [localhost:5000](http://localhost:5000/).
-
-## Deploying to Heroku
-
-```sh
-$ heroku create
-$ git push heroku master
-$ heroku open
-```
-
-or
-
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+FrontEnd: 
+1. HTML/Javascript for Web (`/index.html`)
+2. Alexa Skill Lambda (`/alexa`)
 
 ## Documentation
 
@@ -35,3 +17,12 @@ For more information about using Play and Scala on Heroku, see these Dev Center 
 
 - [Play and Scala on Heroku](https://devcenter.heroku.com/categories/language-support#scala-and-play)
 
+## Credits
+
+1. Basic Alarm Clock Structure: https://github.com/theitrain/clock
+2. UserAgents list: https://github.com/tamimibrahim17/List-of-user-agents
+
+## Contributors
+
+1. [Rushi Jash](https://github.com/rishijash)
+2. [Shivani Patel](https://github.com/Shivaniptl)

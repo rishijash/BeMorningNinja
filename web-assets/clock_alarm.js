@@ -193,6 +193,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Set alarm
     function setAlarm() {
+
+        // Defaul JS
+        var alarmPlayerTitle = document.getElementById("alarmPlayerTitle");
+        var alarmPlayerFooter = document.getElementById("alarmPlayerFooter");
+        alarmPlayerTitle.innerText = "Let's get this Bread 🍞🥖!! ⏰ 🏃 ";
+        alarmPlayerFooter.innerHTML = "<div class=\"row\"> <div class=\"col s6 m6\"> <center> <a class=\"waves-effect waves-light btn\" id=\"strongMorning\"><span>💪</span> I am pumped up!</a> </center> </div> <div class=\"col s6 m6\"> <center> <a class=\"waves-effect waves-light red btn\" id=\"lazyMorning\"><span>😴</span> Need more motivation..</a> </center> </div> </div>";
+
+        // Set Alarm
         if (currentUsername.length > 0 && alarmHours.value && alarmMinutes.value && alarmAMPM.value) {
 
             var hour = 0;
