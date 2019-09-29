@@ -228,11 +228,21 @@ document.addEventListener("DOMContentLoaded", function () {
             // get Video Link
             currentUsername = alarmData.getName();
             var url = alarmData.getFallbackVideo();
+            var imageUrl = alarmData.getFallbackImage();
             // Play it
             var alarmPlayerBody = document.getElementById("alarmPlayerBody");
-            alarmPlayerBody.innerHTML = "<center><video id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
-                "                                Your browser does not support the video tag.\n" +
-                "                            </video></center>";
+            if(imageUrl != null && imageUrl.length > 0) {
+                // Show Image and Play Audio
+                alarmPlayerBody.innerHTML = "<center><audio id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
+                    "                                Your browser does not support the video tag.\n" +
+                    "                            </audio><img src=\"" + imageUrl + "\" width=\"320\" height=\"240\" ></center>";
+
+            } else {
+                // Play Video
+                alarmPlayerBody.innerHTML = "<center><video id=\"alarmVideo\" width=\"320\" height=\"240\" controls autoplay loop src=\"" + url + "\">\n" +
+                    "                                Your browser does not support the video tag.\n" +
+                    "                            </video></center>";
+            }
             $("#alarmPlayer").modal('open');
             triggered = true;
         }
