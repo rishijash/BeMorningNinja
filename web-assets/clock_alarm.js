@@ -19,6 +19,10 @@ var currentUsername = "";
 var fallbackVideoUrl = "";
 var fallbackImageUrl = "";
 
+var breakfastVideoUsername = "";
+var breakfastVideoPost = "";
+var breakfasts = [];
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // Selectors
@@ -322,11 +326,14 @@ function quoteAction(alarmPlayerBody, happyMorning) {
 
 function defaultGreetings() {
     $("#alarmPlayerFooter").hide();
+    var randomBreakfast = breakfasts[Math.floor(Math.random()*breakfasts.length)];
     var alarmPlayerBody = document.getElementById("alarmPlayerBody");
-    alarmPlayerBody.innerHTML = "<br><center><h5>Have a fantastic day!!!</h5></center>";
+    alarmPlayerBody.innerHTML = "<br><center><h5>Have a fantastic day!!!</h5></center><br><br>" +
+        "<h5>Our suggestion: Start your day with a healthy meal: </h5>" +
+        "<a href='" + randomBreakfast.post + "' target='_blank'>Video from @" + randomBreakfast.username + "</a>";
     setTimeout(function() {
         $("#alarmPlayer").modal('close');
-    }, 1000);
+    }, 1500);
 }
 
 // Account Constructor
@@ -339,6 +346,12 @@ function Account(username, gym, sleepy, picture, summary, selectedVideo, genre, 
     this.selectedVideo = selectedVideo;
     this.genre = genre;
     this.selectedImage = selectedImage;
+}
+
+// Breakfast Constructor
+function Breakfast(username, post) {
+    this.username = username;
+    this.post = post;
 }
 
 function httpGet(theUrl) {
@@ -388,8 +401,16 @@ function pushAccountData(result, fromAPI) {
             var selectedVideo = profile.selectedVideoUrl.videoLink;
             var selectedImage = profile.selectedImageUrl.displayUrl;
             var genre = profile.account.genre;
-            var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo, genre, selectedImage);
-            accounts.push(accountObj);
+            if(genre == 'Breakfast') {
+                // Add Breakfast Constructor
+                var selectedPost = profile.selectedVideoUrl.instagramPostUrl;
+                var breakfastObj = new Breakfast(username, selectedPost);
+                breakfasts.add(breakfastObj);
+            } else {
+                // Add Account
+                var accountObj = new Account(username, gymCount, sleepCount, picture, summary, selectedVideo, genre, selectedImage);
+                accounts.push(accountObj);
+            }
         }
         return accounts;
     }
