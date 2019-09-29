@@ -455,7 +455,7 @@ function renderAccountList(accounts, slider) {
             alarmMessage.innerHTML = "<b>Influencer Selected: @" + currentUsername + "</b>";
             fallbackVideoUrl = accounts[cindex].selectedVideo;
             fallbackImageUrl = accounts[cindex].selectedImage;
-            fallbackVideoUrlPost = account[cindex].selectedVideoUrlPost;
+            fallbackVideoUrlPost = accounts[cindex].selectedVideoUrlPost;
         }
     });
 }
