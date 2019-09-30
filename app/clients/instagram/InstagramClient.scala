@@ -93,7 +93,7 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
         val result = Http(url)
           .header("Accept", "application/json")
           .header("User-Agent", userAgent)
-          .option(HttpOptions.readTimeout(4000)).asString
+          .option(HttpOptions.readTimeout(8000)).asString
         if (result.is2xx) {
           Right(Response(result.code.toString, result.body))
         } else {
