@@ -5,12 +5,12 @@ import scala.util.Random
 object TimeoutUtil {
 
   val acceptedTimeoutInSec = List(
-    15,
-    25,
-    30
+    30,
+    45,
+    60
   )
 
-  def getRandomTimeoutInSec = Random.shuffle(acceptedTimeoutInSec).headOption.getOrElse(10)
+  def getRandomTimeoutInSec = Random.shuffle(acceptedTimeoutInSec).headOption.getOrElse(30)
 
 
 }
