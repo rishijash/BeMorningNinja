@@ -7,7 +7,7 @@ import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import scalaj.http.{Http, HttpOptions}
-import util.{HtmlUtil, UserAgentUtil}
+import util.{HtmlUtil, TimeoutUtil, UserAgentUtil}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -66,7 +66,8 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
 
   def getVideoLinkWebSync(postUrl: String): Option[String] = {
     val future = getVideoLinkWeb(postUrl)
-    Await.result(future, 15.seconds)
+    val timeoutSec = TimeoutUtil.getRandomTimeoutInSec
+    Await.result(future, timeoutSec.seconds)
   }
 
   def getVideoLinkWeb(postUrl: String): Future[Option[String]] = {
