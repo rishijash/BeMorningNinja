@@ -21,6 +21,7 @@ For more information about using Play and Scala on Heroku, see these Dev Center 
 
 1. Basic Alarm Clock Structure: https://github.com/theitrain/clock
 2. UserAgents list: https://github.com/tamimibrahim17/List-of-user-agents
+3. Darkmode.js: https://darkmodejs.learn.uno/
 
 ## Contributors
 
