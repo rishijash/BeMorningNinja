@@ -22,7 +22,7 @@ object HtmlUtil {
       val userAgent = Random.shuffle(UserAgentUtil.userAgents).head
       val result = Http(url)
         .header("User-Agent", userAgent)
-        .option(HttpOptions.readTimeout(8000)).asString
+        .option(HttpOptions.readTimeout(4000)).asString
       if (result.is2xx) {
         Some(result.body)
       } else {
