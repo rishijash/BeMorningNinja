@@ -97,7 +97,7 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
         if (result.is2xx) {
           Right(Response(result.code.toString, result.body))
         } else {
-          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code}"
+          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code}. Info: User-Agent used: ${userAgent}"
           log.error(msg)
           log.error("Result: " + result.toString)
           Left(models.Error("INSTAGRAM_API_ERROR", msg))
