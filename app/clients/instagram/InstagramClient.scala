@@ -67,7 +67,7 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
   def getVideoLinkWebSync(postUrl: String): Option[String] = {
     val future = getVideoLinkWeb(postUrl)
     val timeoutSec = TimeoutUtil.getRandomTimeoutInSec
-    Await.result(future, timeoutSec.seconds)
+    Await.result(future, 60.seconds)
   }
 
   def getVideoLinkWeb(postUrl: String): Future[Option[String]] = {
@@ -93,7 +93,7 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
         val result = Http(url)
           .header("Accept", "application/json")
           .header("User-Agent", userAgent)
-          .option(HttpOptions.readTimeout(8000)).asString
+          .option(HttpOptions.readTimeout(4000)).asString
         if (result.is2xx) {
           Right(Response(result.code.toString, result.body))
         } else {
