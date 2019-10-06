@@ -39,7 +39,8 @@ case class User (
   is_verified: Option[Boolean],
   profile_pic_url: Option[String],
   profile_pic_url_hd: Option[String],
-  edge_owner_to_timeline_media: OwnerTimeline
+  edge_owner_to_timeline_media: OwnerTimeline,
+  edge_felix_video_timeline: OwnerTimeline
 )
 
 case class Graphql (

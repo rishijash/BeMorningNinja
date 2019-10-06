@@ -161,7 +161,7 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
   }
 
   private def getBestVideo(instagramProfile: InstagramProfile, includeVideoLink: Boolean = false): Option[SelectedMedia] = {
-    val list = instagramProfile.graphql.user.edge_owner_to_timeline_media.edges.filter(_.node.is_video == true)
+    val list = instagramProfile.graphql.user.edge_felix_video_timeline.edges.filter(_.node.is_video == true)
     val unixTime = System.currentTimeMillis / 1000L
     val latest = Option(list).filter(_.nonEmpty).map(_.minBy(e => math.abs(unixTime - e.node.taken_at_timestamp)))
     latest.map(l => {
