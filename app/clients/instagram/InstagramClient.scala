@@ -7,7 +7,7 @@ import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import scalaj.http.{Http, HttpOptions}
-import util.{HtmlUtil, TimeoutUtil, UserAgentUtil}
+import util.{HtmlUtil, ReqBinUtil, TimeoutUtil, UserAgentUtil}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -23,7 +23,7 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
 
   def getProfile(username: String): Future[Either[models.Error, InstagramProfile]] = {
     val profileUrl = getUsernameRequestUrl(username)
-    sendRequest(profileUrl).map(_.fold(
+    ReqBinUtil.sendRequest(profileUrl).map(_.fold(
       error => Left(error),
       res => {
         val profileOpt = Json.parse(res.body).validateOpt[InstagramProfile].asOpt.flatten
@@ -73,7 +73,7 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
   def getVideoLinkWeb(postUrl: String): Future[Option[String]] = {
     try {
       HtmlUtil.getHtmlFromUrl(postUrl).map(_.map(html => {
-        val startKeyIndex = html.indexOf("https://scontent-lax3-1.cdninstagram.com/v/")
+        val startKeyIndex = html.indexOf("https://scontent-iad3-1.cdninstagram.com/v/")
         val subStringHtml = html.substring(startKeyIndex, html.length)
         val endKeyIndex = subStringHtml.indexOf("\"")
         val url = subStringHtml.substring(0, endKeyIndex).replaceAll("\\\\u0026", "&")
@@ -82,32 +82,6 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
     } catch {
       case NonFatal(e) => {
         Future.successful(None)
-      }
-    }
-  }
-
-  private def sendRequest(url: String): Future[Either[models.Error, Response]] = {
-    Future {
-      try {
-        val userAgent = Random.shuffle(UserAgentUtil.userAgents).head
-        val result = Http(url)
-          .header("Accept", "application/json")
-          .header("User-Agent", userAgent)
-          .option(HttpOptions
-          .followRedirects(true)).asString
-        if (result.is2xx) {
-          Right(Response(result.code.toString, result.body))
-        } else {
-          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code}."
-          log.error(msg)
-          log.error("Result: " + result.toString)
-          Left(models.Error("INSTAGRAM_API_ERROR", msg))
-        }
-      } catch {
-        case e: Exception => {
-          val msg = s"Error in getting profile from Instagram url: ${url} with Exception: ${e.getMessage}"
-          Left(models.Error("INSTAGRAM_API_ERROR", msg))
-        }
       }
     }
   }

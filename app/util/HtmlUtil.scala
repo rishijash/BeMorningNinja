@@ -12,24 +12,9 @@ object HtmlUtil {
   private val log = LoggerFactory.getLogger(this.getClass.getName)
 
   def getHtmlFromUrl(url: String): Future[Option[String]] = {
-    sendRequest(url).map(htmlCode => {
-      htmlCode
+    ReqBinUtil.sendRequest(url).map(htmlRes => {
+      htmlRes.right.toOption.map(_.body)
     })
-  }
-
-  private def sendRequest(url: String): Future[Option[String]] = {
-    Future {
-      val userAgent = Random.shuffle(UserAgentUtil.userAgents).head
-      val result = Http(url)
-        .header("User-Agent", userAgent)
-        .option(HttpOptions.readTimeout(4000)).asString
-      if (result.is2xx) {
-        Some(result.body)
-      } else {
-        log.error(s"Error calling Url: ${url} with response: ${result}")
-        None
-      }
-    }
   }
 
 }
