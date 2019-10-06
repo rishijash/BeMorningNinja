@@ -92,12 +92,11 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
         val userAgent = Random.shuffle(UserAgentUtil.userAgents).head
         val result = Http(url)
           .header("Accept", "application/json")
-          .header("User-Agent", userAgent)
-          .option(HttpOptions.readTimeout(4000)).asString
+          .header("User-Agent", userAgent).asString
         if (result.is2xx) {
           Right(Response(result.code.toString, result.body))
         } else {
-          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code}. Info: User-Agent used: ${userAgent}, Body: ${result.body}."
+          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code}."
           log.error(msg)
           log.error("Result: " + result.toString)
           Left(models.Error("INSTAGRAM_API_ERROR", msg))
