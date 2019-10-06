@@ -92,7 +92,9 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
         val userAgent = Random.shuffle(UserAgentUtil.userAgents).head
         val result = Http(url)
           .header("Accept", "application/json")
-          .header("User-Agent", userAgent).asString
+          .header("User-Agent", userAgent)
+          .option(HttpOptions
+          .followRedirects(true)).asString
         if (result.is2xx) {
           Right(Response(result.code.toString, result.body))
         } else {
