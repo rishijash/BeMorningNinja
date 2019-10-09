@@ -6,6 +6,7 @@ import com.google.inject.Inject
 import datastore.NinjaStore
 import models.{Account, AccountsResponse, GetProfileRes, GetProfilesRes, Ninja, Profile, SelectedMedia}
 import play.api.libs.ws.WSClient
+import util.UserAgentUtil
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,11 +33,23 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     Future {
       val accounts = store.getAccounts()
       if(accounts.isDefined) {
-        Right(AccountsResponse(accounts.get))
+        val sortedAccounts = accounts.get.sortWith(sortByPoint)
+        Right(AccountsResponse(sortedAccounts))
       } else {
         Left(models.Error("ACCOUNT_ERROR", s"ACCOUNTS not found."))
       }
     }
+  }
+
+  def getAlexaProfile(): Future[Either[models.Error, GetProfileRes]] = {
+    getAccounts().flatMap(_.fold(
+      error => Future.successful(Left(error)),
+      accounts => {
+        val sortedAccountsList = accounts.accounts.take(3)
+        val selectedAccount = Random.shuffle(sortedAccountsList).head
+        getProfile(selectedAccount.username)
+      }
+    ))
   }
 
   def updateAccount(username: String, thumbsUp: Boolean, gym: Boolean, sleepy: Boolean): Future[Either[models.Error, Boolean]] = {
@@ -78,6 +91,12 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     val p1Points = p1.account.flatMap(_.gymCount).getOrElse(0) - p1.account.flatMap(_.sleepyCount).getOrElse(0)
     val p2Points = p2.account.flatMap(_.gymCount).getOrElse(0) - p2.account.flatMap(_.sleepyCount).getOrElse(0)
     p1Points > p2Points
+  }
+
+  private def sortByPoint(a1: Account, a2: Account) = {
+    val a1Points = a1.gymCount.getOrElse(0) - a1.sleepyCount.getOrElse(0)
+    val a2Points = a2.gymCount.getOrElse(0) - a2.sleepyCount.getOrElse(0)
+    a1Points > a2Points
   }
 
 

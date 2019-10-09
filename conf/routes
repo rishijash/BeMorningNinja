@@ -2,10 +2,13 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
 GET     /                               @controllers.NinjaController.home()
+
 GET     /profiles                       @controllers.NinjaController.getProfiles(withContent: Option[Boolean], withSelectedContent: Option[Boolean])
 GET     /profiles/:username             @controllers.NinjaController.getProfile(username: String)
+GET     /alexa/profile                  @controllers.NinjaController.getAlexaProfile()
+
+# todo: Personalization stuff
 GET     /ninja/:ninjaId                 @controllers.NinjaController.getNinja(ninjaId: String)
 POST    /ninja/:ninjaId                 @controllers.NinjaController.addNinja(ninjaId: String)
 PUT     /ninja/:ninjaId                 @controllers.NinjaController.updateNinja(ninjaId: String)

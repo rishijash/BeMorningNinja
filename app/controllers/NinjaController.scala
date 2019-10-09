@@ -32,6 +32,14 @@ class NinjaController @Inject()(implicit ws: WSClient) extends Controller {
     ))
   }
 
+  def getAlexaProfile() = Action.async(parse.anyContent) { request =>
+    ninjaManager.getAlexaProfile().map(_.fold(
+      error => InternalServerError(Json.toJson(error)),
+      res => Ok(Json.toJson(res))
+    ))
+
+  }
+
   def getNinja(ninjaId: String) = Action.async(parse.anyContent) { request =>
     ninjaManager.getNinja(ninjaId).map(_.fold(
       error => InternalServerError(Json.toJson(error)),
