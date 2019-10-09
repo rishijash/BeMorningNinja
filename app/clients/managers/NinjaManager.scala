@@ -45,8 +45,12 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     getAccounts().flatMap(_.fold(
       error => Future.successful(Left(error)),
       accounts => {
-        val sortedAccountsList = accounts.accounts.take(3)
-        val selectedAccount = Random.shuffle(sortedAccountsList).head
+        val sortedAccountsList = accounts.accounts.take(4)
+        // To give first profile more preference
+        val listWithPriority = List(
+          sortedAccountsList(0),
+          sortedAccountsList(0)) ++ sortedAccountsList
+        val selectedAccount = Random.shuffle(listWithPriority).head
         getProfile(selectedAccount.username)
       }
     ))
