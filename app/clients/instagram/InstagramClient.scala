@@ -73,7 +73,8 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
   def getVideoLinkWeb(postUrl: String): Future[Option[String]] = {
     try {
       HtmlUtil.getHtmlFromUrl(postUrl).map(_.map(html => {
-        val startKeyIndex = html.indexOf("og:video\" content=\"https://scontent")
+//        val startKeyIndex = html.indexOf("https://scontent-iad3-1.cdninstagram.com/v/")
+        val startKeyIndex = html.indexOf("og:video\" content=\"https://scontent") + 19
         val subStringHtml = html.substring(startKeyIndex, html.length)
         val endKeyIndex = subStringHtml.indexOf("\"")
         val url = subStringHtml.substring(0, endKeyIndex).replaceAll("\\\\u0026", "&")
