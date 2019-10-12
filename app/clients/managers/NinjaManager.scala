@@ -45,7 +45,7 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
     getAccounts().flatMap(_.fold(
       error => Future.successful(Left(error)),
       accounts => {
-        val sortedAccountsList = accounts.accounts.take(4)
+        val sortedAccountsList = accounts.accounts.filterNot(_.genre.getOrElse("").equalsIgnoreCase("youtuber")).take(4)
         // To give first profile more preference
         val listWithPriority = List(
           sortedAccountsList(0),
