@@ -10,7 +10,8 @@ case class Account (
   genre: Option[String],
   thumbsupCount: Option[Int],
   sleepyCount: Option[Int],
-  gymCount: Option[Int]
+  gymCount: Option[Int],
+  backupVideo: Option[String]
 )
 
 object Account {

@@ -70,16 +70,37 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
   def getProfiles(withContent: Option[Boolean], withSelectedContent: Option[Boolean]): Future[Either[models.Error, GetProfilesRes]] = {
     val usernamesData = store.getAccounts().getOrElse(List.empty)
     if (withContent.getOrElse(true)) {
-      val usernamesFutureList = usernamesData.map(_.username).map(user => instagramClient.getProfile(user))
+      val usernamesFutureList = usernamesData.map(data => instagramClient.getProfile(data.username))
       val usernamesFuture = Future.sequence(usernamesFutureList)
       usernamesFuture.map(usernamesRes => {
         val profiles = usernamesRes.flatMap(usernameRes => {
           val account = usernamesData.find(_.username == usernameRes.right.toOption.map(_.graphql.user.username).getOrElse(""))
           val includeVideoLink = withSelectedContent.getOrElse(true)
-          usernameRes.right.toOption.map(instaProf => toProfile(instaProf, account, includeVideoLink))
+          val maybeProfile = usernameRes.right.toOption.map(instaProf => toProfile(instaProf, account, includeVideoLink))
+          maybeProfile
         })
         // Sort Profiles
-        val sortedProfiles = profiles.sortWith(sortByPoint)
+        var sortedProfiles = profiles.sortWith(sortByPoint)
+        if(sortedProfiles.isEmpty) {
+          sortedProfiles = usernamesData.map(account => {
+            Profile(
+              account.username,
+              Some(account),
+              "instagram.com/"+account.username,
+              account.genre,
+              Some(account.accountSummary),
+              Some(account.accountPicture),
+              Some(
+                SelectedMedia(
+                  account.backupVideo.getOrElse(""),
+                  account.backupVideo.getOrElse(""),
+                  account.backupVideo
+                )
+              ),
+              None
+            )
+          }).sortWith(sortByPoint)
+        }
         val res = GetProfilesRes(profiles = sortedProfiles)
         Right(res)
       })

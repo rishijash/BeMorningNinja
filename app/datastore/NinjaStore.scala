@@ -29,6 +29,7 @@ class NinjaStore {
   private val gymCountKey = "gymCount"
   private val accountPictureKey = "accountPicture"
   private val accountSummaryKey = "accountSummary"
+  private val backupAudioKey = "backupAudio"
 
   private val ninjaCollection = "ninjas"
   private val ninjaIdKey = "ninjaId"
@@ -40,7 +41,7 @@ class NinjaStore {
   private val clientEmail = scala.util.Properties.envOrElse("client_email", "")
   private val clientId = scala.util.Properties.envOrElse("client_id", "")
   private val clientCertUrl = scala.util.Properties.envOrElse("client_x509_cert_url", "")
-
+  
   private val createKeyFileData =
     s"""
        |{
@@ -78,8 +79,9 @@ class NinjaStore {
         val thumbsupCount = Option(d.get(thumbsUpCountKey)).map(_.toString.toInt)
         val accountPicture = d.get(accountPictureKey).toString
         val accountSummary = Option(d.get(accountSummaryKey)).map(_.toString).filter(_.nonEmpty).getOrElse("")
+        val backupAudio = Option(d.get(backupAudioKey)).map(_.toString).filter(_.nonEmpty)
 
-        Account(d.getId, username, accountPicture, accountSummary, genre, thumbsupCount, sleepyCount, gymCount)
+        Account(d.getId, username, accountPicture, accountSummary, genre, thumbsupCount, sleepyCount, gymCount, backupAudio)
       })
       Some(usernamesData)
     } catch {
@@ -100,7 +102,9 @@ class NinjaStore {
         val thumbsupCount = Option(d.get(thumbsUpCountKey)).map(_.toString.toInt)
         val accountPicture = d.get(accountPictureKey).toString
         val accountSummary = Option(d.get(accountSummaryKey)).map(_.toString).filter(_.nonEmpty).getOrElse("")
-        Account(d.getId, username, accountPicture, accountSummary, genre, thumbsupCount, sleepyCount, gymCount)
+        val backupAudio = Option(d.get(backupAudioKey)).map(_.toString).filter(_.nonEmpty)
+
+        Account(d.getId, username, accountPicture, accountSummary, genre, thumbsupCount, sleepyCount, gymCount, backupAudio)
       })
     } catch {
       case e: Exception =>

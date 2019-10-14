@@ -26,11 +26,17 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
     ReqBinUtil.sendRequestNoReqBin(profileUrl).map(_.fold(
       error => Left(error),
       res => {
-        val profileOpt = Json.parse(res.body).validateOpt[InstagramProfile].asOpt.flatten
-        if (profileOpt.isDefined) {
-          Right(profileOpt.get)
-        } else {
-          Left(models.Error("INSTAGRAM_API_ERROR", "Error to deserialize Profile"))
+        try {
+          val profileOpt = Json.parse(res.body).validateOpt[InstagramProfile].asOpt.flatten
+          if (profileOpt.isDefined) {
+            Right(profileOpt.get)
+          } else {
+            Left(models.Error("INSTAGRAM_API_ERROR", "Error to deserialize Profile"))
+          }
+        } catch {
+          case e: Exception => {
+            Left(models.Error("INSTAGRAM_API_ERROR", "Error to deserialize Profile"))
+          }
         }
       }
     ))
