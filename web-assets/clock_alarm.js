@@ -243,9 +243,9 @@ document.addEventListener("DOMContentLoaded", function () {
             var alarmPlayerBody = document.getElementById("alarmPlayerBody");
             if(imageUrl != null && imageUrl.length > 0) {
                 // Show Image and Play Audio
-                alarmPlayerBody.innerHTML = "<center><a href=\"" + postUrl + "\" target='_blank'><audio id=\"alarmVideo\" controls autoplay loop src=\"" + url + "\">\n" +
+                alarmPlayerBody.innerHTML = "<center><a href=\"" + postUrl + "\" target='_blank'><video id=\"alarmVideo\" controls autoplay loop src=\"" + url + "\">\n" +
                     "                                Your browser does not support the video tag.\n" +
-                    "                            </audio><br><img src=\"" + imageUrl + "\" height=\"240\" ></a></center>";
+                    "                            </video><br></a></center>";
 
             } else {
                 // Play Video
