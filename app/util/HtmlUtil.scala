@@ -12,7 +12,7 @@ object HtmlUtil {
   private val log = LoggerFactory.getLogger(this.getClass.getName)
 
   def getHtmlFromUrl(url: String): Future[Option[String]] = {
-    ReqBinUtil.sendRequest(url).map(htmlRes => {
+    ReqBinUtil.sendRequestNoReqBin(url).map(htmlRes => {
       htmlRes.right.toOption.map(_.body)
     })
   }

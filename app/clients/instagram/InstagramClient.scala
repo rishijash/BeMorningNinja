@@ -23,7 +23,7 @@ class InstagramClient @Inject() (implicit ws: WSClient) {
 
   def getProfile(username: String): Future[Either[models.Error, InstagramProfile]] = {
     val profileUrl = getUsernameRequestUrl(username)
-    ReqBinUtil.sendRequest(profileUrl).map(_.fold(
+    ReqBinUtil.sendRequestNoReqBin(profileUrl).map(_.fold(
       error => Left(error),
       res => {
         val profileOpt = Json.parse(res.body).validateOpt[InstagramProfile].asOpt.flatten

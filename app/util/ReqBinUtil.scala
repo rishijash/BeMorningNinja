@@ -53,4 +53,29 @@ object ReqBinUtil {
     }
   }
 
+  def sendRequestNoReqBin(url: String): Future[Either[models.Error, Response]] = {
+    Future {
+      try {
+        val userAgent = Random.shuffle(UserAgentUtil.userAgents).head
+        val result = Http(url)
+          .header("User-Agent", userAgent)
+          .asString
+        if (result.is2xx) {
+          // Convert Rbin Response to Response
+          Right(Response(result.code.toString, result.body))
+        } else {
+          val msg = s"Error in getting profile from Instagram url: ${url} with response code: ${result.code}."
+          log.error(msg)
+          log.error("Result: " + result.toString)
+          Left(models.Error("API_ERROR", msg))
+        }
+      } catch {
+        case e: Exception => {
+          val msg = s"Error in getting profile from Instagram url: ${url} with Exception: ${e.getMessage}"
+          Left(models.Error("API_ERROR", msg))
+        }
+      }
+    }
+  }
+
 }
