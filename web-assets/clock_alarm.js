@@ -241,11 +241,12 @@ document.addEventListener("DOMContentLoaded", function () {
             var imageUrl = alarmData.getFallbackImage();
             // Play it
             var alarmPlayerBody = document.getElementById("alarmPlayerBody");
+            imageUrl = null;
             if(imageUrl != null && imageUrl.length > 0) {
                 // Show Image and Play Audio
-                alarmPlayerBody.innerHTML = "<center><a href=\"" + postUrl + "\" target='_blank'><video id=\"alarmVideo\" controls autoplay loop src=\"" + url + "\">\n" +
+                alarmPlayerBody.innerHTML = "<center><a href=\"" + postUrl + "\" target='_blank'><audio id=\"alarmVideo\" controls autoplay loop src=\"" + url + "\">\n" +
                     "                                Your browser does not support the video tag.\n" +
-                    "                            </video><br></a></center>";
+                    "                            </audio><br><img src=\"" + imageUrl + "\" height=\"240\" ></a></center>";
 
             } else {
                 // Play Video
