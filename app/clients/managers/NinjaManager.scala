@@ -102,7 +102,14 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
                   account.backupVideo
                 )
               ),
-              None
+              // Dummy Data
+              Some(
+                SelectedMedia(
+                  account.backupVideo.getOrElse(""),
+                  account.backupVideo.getOrElse(""),
+                  None
+                )
+              )
             )
           }).sortWith(sortByPoint)
         }
