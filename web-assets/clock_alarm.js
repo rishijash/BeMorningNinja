@@ -413,7 +413,10 @@ function pushAccountData(result, fromAPI) {
             var picture = profile.account.accountPicture;
             var summary = profile.summary;
             var selectedVideo = profile.selectedVideoUrl.videoLink;
-            var selectedImage = profile.selectedImageUrl.displayUrl;
+            var selectedImage = null;
+            if(profile.selectedImageUrl != null) {
+                selectedImage = profile.selectedImageUrl.displayUrl;    
+            }        
             var genre = profile.account.genre;
             var selectedVideoUrlPost = profile.selectedVideoUrl.instagramPostUrl;
             if(genre == 'Breakfast') {
