@@ -41,7 +41,7 @@ class NinjaStore {
   private val clientEmail = scala.util.Properties.envOrElse("client_email", "")
   private val clientId = scala.util.Properties.envOrElse("client_id", "")
   private val clientCertUrl = scala.util.Properties.envOrElse("client_x509_cert_url", "")
-  
+
   private val createKeyFileData =
     s"""
        |{
@@ -123,9 +123,32 @@ class NinjaStore {
         val docData = (for {
           genre <- maybeAccount.get.genre
         } yield {
-          new util.HashMap[String, Any](Map(usernameKey -> username, genreKey -> genre, thumbsUpCountKey -> thumbsupCount, gymCountKey -> gymCount, sleepyCountKey -> sleepyCount, accountPictureKey -> maybeAccount.get.accountPicture, accountSummaryKey -> maybeAccount.get.accountSummary))
+          new util.HashMap[String, Any](Map(usernameKey -> username, genreKey -> genre, thumbsUpCountKey -> thumbsupCount, gymCountKey -> gymCount, sleepyCountKey -> sleepyCount, accountPictureKey -> maybeAccount.get.accountPicture, accountSummaryKey -> maybeAccount.get.accountSummary, backupAudioKey -> maybeAccount.get.backupVideo.getOrElse("")))
         }).getOrElse({
-          new util.HashMap[String, Any](Map(usernameKey -> username, thumbsUpCountKey -> thumbsupCount, gymCountKey -> gymCount, sleepyCountKey -> sleepyCount, accountPictureKey -> maybeAccount.get.accountPicture, accountSummaryKey -> maybeAccount.get.accountSummary))
+          new util.HashMap[String, Any](Map(usernameKey -> username, thumbsUpCountKey -> thumbsupCount, gymCountKey -> gymCount, sleepyCountKey -> sleepyCount, accountPictureKey -> maybeAccount.get.accountPicture, accountSummaryKey -> maybeAccount.get.accountSummary, backupAudioKey -> maybeAccount.get.backupVideo.getOrElse("")))
+        })
+        firebaseClient.collection(accountsCollection).document(maybeAccount.get.dataId).set(docData)
+        true
+      } else {
+        false
+      }
+    } catch {
+      case e: Exception =>
+        log.error(s"Exception: ${e.getMessage} in updating account for username: ${username}")
+        false
+    }
+  }
+
+  def updateAccountAudio(username: String, newBackupAudio: String): Boolean = {
+    try {
+      val maybeAccount = getAccount(username)
+      if (maybeAccount.isDefined) {
+        val docData = (for {
+          genre <- maybeAccount.get.genre
+        } yield {
+          new util.HashMap[String, Any](Map(usernameKey -> username, genreKey -> genre, thumbsUpCountKey -> maybeAccount.get.thumbsupCount.getOrElse(0), gymCountKey -> maybeAccount.get.gymCount.getOrElse(0), sleepyCountKey -> maybeAccount.get.sleepyCount.getOrElse(0), accountPictureKey -> maybeAccount.get.accountPicture, accountSummaryKey -> maybeAccount.get.accountSummary, backupAudioKey -> newBackupAudio))
+        }).getOrElse({
+          new util.HashMap[String, Any](Map(usernameKey -> username, thumbsUpCountKey -> maybeAccount.get.thumbsupCount.getOrElse(0), gymCountKey -> maybeAccount.get.gymCount.getOrElse(0), sleepyCountKey -> maybeAccount.get.sleepyCount.getOrElse(0), accountPictureKey -> maybeAccount.get.accountPicture, accountSummaryKey -> maybeAccount.get.accountSummary, backupAudioKey -> newBackupAudio))
         })
         firebaseClient.collection(accountsCollection).document(maybeAccount.get.dataId).set(docData)
         true

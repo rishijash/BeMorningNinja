@@ -77,6 +77,11 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
           val account = usernamesData.find(_.username == usernameRes.right.toOption.map(_.graphql.user.username).getOrElse(""))
           val includeVideoLink = withSelectedContent.getOrElse(true)
           val maybeProfile = usernameRes.right.toOption.map(instaProf => toProfile(instaProf, account, includeVideoLink))
+          val maybeVideoUrlFromInstagram = maybeProfile.flatMap(_.selectedVideoUrl.map(_.videoLink)).flatten
+          // Update Store with latest audio
+          maybeVideoUrlFromInstagram.foreach(url => {
+            store.updateAccountAudio(maybeProfile.get.username, url)
+          })
           maybeProfile
         })
         // Sort Profiles
