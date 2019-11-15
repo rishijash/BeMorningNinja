@@ -49,6 +49,23 @@ class NinjaManager @Inject()(implicit ws: WSClient) {
         // To give first profile more preference
         val listWithPriority = List(
           sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
+          sortedAccountsList(0),
           sortedAccountsList(0)) ++ sortedAccountsList
         val selectedAccount = Random.shuffle(listWithPriority).head
         getProfile(selectedAccount.username)
