@@ -415,8 +415,8 @@ function pushAccountData(result, fromAPI) {
             var selectedVideo = profile.selectedVideoUrl.videoLink;
             var selectedImage = null;
             if(profile.selectedImageUrl != null) {
-                selectedImage = profile.selectedImageUrl.displayUrl;    
-            }        
+                selectedImage = profile.selectedImageUrl.displayUrl;
+            }
             var genre = profile.account.genre;
             var selectedVideoUrlPost = profile.selectedVideoUrl.instagramPostUrl;
             if(genre == 'Breakfast') {
@@ -470,6 +470,12 @@ $(document).ready(function(){
     $('.modal').modal({
         dismissible: false
     });
+
+    // Open Alexa Modal for alexa parameter on load
+    var link = window.location.href;
+    if(link.includes("alexa")) {
+      $('#alexaModal').modal('open');
+    }
 
 
     // Hide on mobile
