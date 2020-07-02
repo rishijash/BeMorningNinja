@@ -1,3 +1,5 @@
+# Due to changing in Instagram API, we are shutting down the project. Thank you for using it. <3
+
 # BeMoningNinja
 
 BeMorninngNinja lets you wake up and/or motivate with your fav instagram influencer.
